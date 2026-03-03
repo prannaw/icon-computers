@@ -30,6 +30,7 @@ const getOrderStatusFromPayment = (paymentStatus) => {
 
 const generateMerchantOrderId = () => `ICON_${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
 const TRACKING_STAGES = ['Order Placed', 'Packed', 'Shipped', 'Delivered'];
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 // --- ADMIN STATS ROUTE ---
 router.get('/admin/stats', async (req, res) => {
@@ -253,7 +254,7 @@ router.post('/payment/cashfree/create-order', async (req, res) => {
 
     const orderId = generateMerchantOrderId();
     const customerId = userId ? String(userId) : `guest_${Date.now()}`;
-    const returnUrlBase = process.env.CASHFREE_RETURN_URL || 'http://localhost:3000/my-orders';
+    const returnUrlBase = process.env.CASHFREE_RETURN_URL || `${FRONTEND_URL}/my-orders`;
 
     const payload = {
       order_id: orderId,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import API from '../../api'; 
 import ProductCard from '../../components/ProductCard.jsx';
@@ -19,7 +19,7 @@ const Home = () => {
    * Because this is called on every URL change, navigating back from 
    * ProductDetails will trigger a fresh fetch with the new ratings.
    */
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams(location.search);
@@ -36,7 +36,7 @@ const Home = () => {
       setError("Could not load products. Please check your connection.");
       setLoading(false);
     }
-  };
+  }, [location.search, sortOption]);
 
   /**
    * The dependency array includes location.search. 
@@ -45,7 +45,7 @@ const Home = () => {
    */
   useEffect(() => {
     fetchProducts();
-  }, [location.search, sortOption]);
+  }, [fetchProducts]);
 
   // 2. Navigation Helper
   const filterByCategory = (categoryName) => {

@@ -13,8 +13,27 @@ const productRoutes = require('./routes/productRoutes');
 
 const app = express();
 
+const parseAllowedOrigins = () => {
+  const rawOrigins = process.env.CORS_ORIGIN || '';
+  const origins = rawOrigins
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  return origins;
+};
+
+const allowedOrigins = parseAllowedOrigins();
+
 // --- Middleware ---
-app.use(cors());
+app.use(cors({
+  origin(origin, callback) {
+    // Allow non-browser clients and server-to-server calls.
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.length === 0) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('CORS: Origin not allowed'));
+  }
+}));
 app.use(express.json({
   limit: '10mb',
   verify: (req, res, buf) => {
@@ -67,4 +86,9 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Local: http://localhost:${PORT}`);
+  if (allowedOrigins.length) {
+    console.log(`CORS_ORIGIN enabled for: ${allowedOrigins.join(', ')}`);
+  } else {
+    console.log('CORS_ORIGIN not set. Allowing all origins.');
+  }
 });
