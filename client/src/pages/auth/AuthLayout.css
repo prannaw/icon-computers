@@ -1,0 +1,200 @@
+/* Main Wrapper - Centers the form on the screen */
+.auth-page-wrapper {
+    min-height: calc(100vh - 80px); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f4f7f9; /* Light professional gray */
+    padding: 20px;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 420px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Form Card */
+.auth-form {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.auth-form h2 {
+    margin: 0;
+    color: #1a1a1a;
+    font-size: 1.8rem;
+    text-align: center;
+    font-weight: 700;
+}
+
+.auth-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Input Fields */
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1.5px solid #e1e1e1;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+    outline: none;
+    color: #333;
+}
+
+.auth-form input:focus {
+    border-color: #007bff; /* ICON Blue */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* --- BUTTONS --- */
+.auth-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.auth-btn:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.auth-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.auth-btn:disabled {
+    background-color: #cbd5e0;
+    color: #fff;
+    cursor: not-allowed;
+}
+
+/* --- ERROR MESSAGES --- */
+.error-msg {
+    background: #fff1f0;
+    color: #cf1322;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #ffa39e;
+    font-size: 0.85rem;
+    text-align: center;
+    animation: shake 0.4s ease-in-out;
+}
+
+/* --- OTP SPECIFIC STYLES --- */
+.otp-input-container {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 25px 0;
+}
+
+.otp-input-box {
+    width: 45px;
+    height: 55px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background: #fdfdfd;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #007bff; /* Digits appear in ICON blue */
+}
+
+.otp-input-box:focus {
+    border-color: #007bff !important;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.2) !important;
+    transform: translateY(-2px);
+    background: #fff;
+    outline: none;
+}
+
+/* --- LINKS & FOOTER --- */
+.auth-switch {
+    margin-top: 25px;
+    text-align: center;
+    color: #718096;
+    font-size: 0.9rem;
+}
+
+.auth-switch a, .resend-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.auth-switch a:hover, .resend-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Styling for the Spam hint under the subtitle */
+.auth-subtitle small {
+    display: block;
+    margin-top: 10px;
+    color: #a0aec0;
+    font-weight: 400;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Responsive adjustments for smaller phones */
+@media (max-width: 480px) {
+    .auth-form {
+        padding: 30px 20px;
+    }
+    .otp-input-box {
+        width: 38px;
+        height: 50px;
+        font-size: 1.25rem;
+    }
+    .otp-input-container {
+        gap: 8px;
+    }
+}

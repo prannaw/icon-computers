@@ -1,0 +1,230 @@
+.my-orders-page {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 0 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+.order-success-container {
+  display: flex;
+  justify-content: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.success-card {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 550px;
+}
+
+.success-icon {
+  font-size: 4rem;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.success-card h2 {
+  color: #2d3748;
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+}
+
+.order-number {
+  color: #718096;
+  font-size: 1rem;
+  margin-bottom: 25px;
+}
+
+/* --- NEW: RECEIPT BOX STYLING --- */
+.receipt-details {
+  text-align: left;
+  background: #ffffff;
+  border: 2px dashed #e2e8f0; /* Paper receipt effect */
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+  color: #4a5568;
+}
+
+.total-row {
+  border-top: 1px solid #edf2f7;
+  padding-top: 10px;
+  margin-top: 10px;
+  font-weight: 800;
+  color: #2d3748;
+}
+
+.method-badge {
+  background: #ebf8ff;
+  color: #2b6cb0;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.status-text {
+  font-weight: 700;
+  color: #38a169;
+}
+
+/* --- VERIFICATION BANNER --- */
+.verification-banner {
+  background: #fffaf0;
+  color: #9c4221;
+  border-left: 4px solid #ed8936;
+  padding: 12px;
+  margin-bottom: 30px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  text-align: left;
+  line-height: 1.4;
+}
+
+/* --- TIMELINE STYLING --- */
+.timeline-container {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.timeline-container h3 {
+  font-size: 1rem;
+  color: #4a5568;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.timeline {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  padding: 0 5px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.circle {
+  width: 32px;
+  height: 32px;
+  background: #e2e8f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #718096;
+  transition: all 0.3s ease;
+  margin-bottom: 8px;
+  border: 4px solid white;
+}
+
+.step.completed .circle {
+  background: #38a169;
+  color: white;
+}
+
+.step.active .circle {
+  background: #3182ce;
+  color: white;
+  box-shadow: 0 0 0 4px #ebf8ff;
+}
+
+.step p {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #a0aec0;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.step.completed p, .step.active p {
+  color: #2d3748;
+}
+
+/* Connecting Line */
+.step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  width: 100%;
+  height: 3px;
+  background: #e2e8f0;
+  z-index: -1;
+}
+
+.step.completed:not(:last-child)::after {
+  background: #38a169;
+}
+
+/* --- EMPTY STATE --- */
+.no-orders-content {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.browse-btn {
+  margin-top: 20px;
+  padding: 12px 25px;
+  background: #2d3748;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* --- ACTIONS --- */
+.continue-btn {
+  width: 100%;
+  padding: 16px;
+  background: #3182ce;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 20px;
+}
+
+.continue-btn:hover {
+  background: #2b6cb0;
+}
+
+@media (max-width: 600px) {
+  .step p { font-size: 0.65rem; }
+  .success-card { padding: 25px; }
+}
