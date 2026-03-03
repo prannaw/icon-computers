@@ -94,13 +94,40 @@ router.post('/signup', async (req, res) => {
   } catch (err) {
     console.error("Signup Error:", err);
 
-    if (String(err.message || '').includes('SMTP is not configured')) {
+    const rawError = String(err.message || '');
+    const lowerError = rawError.toLowerCase();
+
+    if (lowerError.includes('smtp is not configured')) {
       return res.status(500).json({
-        error: 'OTP email service is not configured on server. Please set SMTP credentials.'
+        message: 'OTP email service is not configured on server. Please set SMTP credentials.'
       });
     }
 
-    res.status(500).json({ error: "Failed to process registration or send email." });
+    if (
+      lowerError.includes('invalid login') ||
+      lowerError.includes('username and password not accepted') ||
+      lowerError.includes('535')
+    ) {
+      return res.status(500).json({
+        message: 'SMTP authentication failed. Recheck SMTP_USER and SMTP_PASS (Gmail App Password).'
+      });
+    }
+
+    if (
+      lowerError.includes('etimedout') ||
+      lowerError.includes('econnreset') ||
+      lowerError.includes('smtp timeout') ||
+      lowerError.includes('connection timeout')
+    ) {
+      return res.status(500).json({
+        message: 'SMTP connection timed out. Verify SMTP host/port and try again.'
+      });
+    }
+
+    res.status(500).json({
+      message: 'Failed to process registration or send email.',
+      debug: process.env.NODE_ENV === 'development' ? rawError : undefined
+    });
   }
 });
 
