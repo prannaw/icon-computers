@@ -4,7 +4,8 @@ let transporter = null;
 let verifyTriggered = false;
 
 const getMailConfig = () => {
-  const smtpHost = process.env.SMTP_HOST || 'smtp-relay.brevo.com';
+  const smtpService = process.env.SMTP_SERVICE || '';
+  const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
   const smtpPort = Number(process.env.SMTP_PORT || 587);
   const smtpSecure = String(process.env.SMTP_SECURE || 'false').toLowerCase() === 'true';
 
@@ -20,6 +21,7 @@ const getMailConfig = () => {
   }
 
   return {
+    smtpService,
     smtpHost,
     smtpPort,
     smtpSecure,
@@ -33,8 +35,7 @@ const getTransporter = () => {
   if (transporter) return transporter;
 
   const cfg = getMailConfig();
-  transporter = nodemailer.createTransport({
-    host: cfg.smtpHost,
+  const transportConfig = {
     port: cfg.smtpPort,
     secure: cfg.smtpSecure, // true for 465, false for 587/2525
     connectionTimeout: 10000,
@@ -44,7 +45,15 @@ const getTransporter = () => {
       user: cfg.smtpUser,
       pass: cfg.smtpPass
     }
-  });
+  };
+
+  if (cfg.smtpService) {
+    transportConfig.service = cfg.smtpService;
+  } else {
+    transportConfig.host = cfg.smtpHost;
+  }
+
+  transporter = nodemailer.createTransport(transportConfig);
 
   if (!verifyTriggered) {
     verifyTriggered = true;
