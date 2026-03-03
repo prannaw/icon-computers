@@ -29,7 +29,11 @@ const Signup = () => {
             
         } catch (err) {
             // Displays specific backend errors (e.g., "Password must be 6-15 characters")
-            const serverMessage = err.response?.data?.msg || err.response?.data?.message;
+            const serverMessage =
+              err.response?.data?.msg ||
+              err.response?.data?.message ||
+              err.response?.data?.error ||
+              (err.code === 'ECONNABORTED' ? 'Request timed out. Please try again.' : '');
             setError(serverMessage || 'Registration failed. Please try again.');
             
             console.error("Signup Error Details:", err.response?.data);

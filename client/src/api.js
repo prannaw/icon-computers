@@ -3,7 +3,10 @@ import axios from 'axios';
 const rawApiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
 const normalizedApiBaseUrl = rawApiBaseUrl.replace(/\/+$/, '');
 
-const API = axios.create({ baseURL: normalizedApiBaseUrl });
+const API = axios.create({
+  baseURL: normalizedApiBaseUrl,
+  timeout: 20000
+});
 
 API.interceptors.request.use((req) => {
     const storageData = localStorage.getItem('user');

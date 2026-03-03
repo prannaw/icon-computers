@@ -37,6 +37,9 @@ const getTransporter = () => {
     host: cfg.smtpHost,
     port: cfg.smtpPort,
     secure: cfg.smtpSecure, // true for 465, false for 587/2525
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
     auth: {
       user: cfg.smtpUser,
       pass: cfg.smtpPass
@@ -90,7 +93,12 @@ const sendOTPEmail = async (email, otp) => {
   };
 
   const mailTransporter = getTransporter();
-  return mailTransporter.sendMail(mailOptions);
+  return Promise.race([
+    mailTransporter.sendMail(mailOptions),
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('SMTP timeout. Please verify SMTP settings and try again.')), 20000);
+    })
+  ]);
 };
 
 module.exports = { sendOTPEmail };
