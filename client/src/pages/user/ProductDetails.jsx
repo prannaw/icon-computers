@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom'; // Added useNavigate
-import API, { 
+import { useCart } from '../../context/CartContext';
+import { 
   fetchProductDetails, 
   fetchReviews, 
   postReview, 
@@ -12,6 +13,7 @@ import '../../styles/ProductDetails.css';
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate(); // Initialize navigate
+  const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +24,12 @@ const ProductDetails = () => {
   const storageData = JSON.parse(localStorage.getItem('user'));
   const userRole = storageData?.role || storageData?.result?.role;
   const isAdmin = userRole === 'admin';
-  const currentUserName = storageData?.name || storageData?.result?.name || "Guest User";
+  const currentUserName =
+    storageData?.username ||
+    storageData?.result?.username ||
+    storageData?.name ||
+    storageData?.result?.name ||
+    "Guest User";
 
   const loadPageData = useCallback(async () => {
     try {
@@ -87,6 +94,16 @@ const ProductDetails = () => {
     }
   };
 
+  const handleAddToCart = () => {
+    if (!storageData) {
+      alert('Please login to add products to cart.');
+      navigate('/login');
+      return;
+    }
+    addToCart(product);
+    alert('Added to cart.');
+  };
+
   if (loading) return <div className="status-message">Loading Product Details...</div>;
   if (!product) return (
     <div className="status-message">
@@ -132,7 +149,7 @@ const ProductDetails = () => {
             </ul>
           </div>
           
-          <button className="add-to-cart-btn">Add to Cart</button>
+          <button className="add-to-cart-btn" onClick={handleAddToCart}>Add to Cart</button>
         </div>
       </div>
 

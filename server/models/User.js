@@ -29,6 +29,17 @@ const userSchema = new mongoose.Schema({
     type: Boolean, 
     default: false 
   },
+  phone: {
+    type: String,
+    default: ''
+  },
+  address: {
+    fullAddress: { type: String, default: '' },
+    city: { type: String, default: '' },
+    state: { type: String, default: '' },
+    country: { type: String, default: 'India' },
+    pinCode: { type: String, default: '' }
+  },
   
   // --- OTP & VERIFICATION FIELDS ---
   isVerified: { 

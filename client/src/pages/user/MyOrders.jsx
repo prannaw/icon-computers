@@ -1,104 +1,184 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { cancelMyOrder, fetchMyOrders, verifyCashfreeOrder } from '../../api';
 import '../../styles/MyOrders.css';
-
-const OrderTimeline = ({ currentStage }) => {
-  const stages = ['Order Placed', 'Packed', 'Shipped', 'Delivered'];
-  
-  // For a new order, 'Order Placed' (index 0) is the active stage
-  const currentIndex = stages.indexOf(currentStage);
-
-  return (
-    <div className="timeline-container">
-      <h3>Order Progress</h3>
-      <div className="timeline">
-        {stages.map((stage, index) => (
-          <div 
-            key={stage} 
-            className={`step ${index <= currentIndex ? 'completed' : ''} ${index === currentIndex ? 'active' : ''}`}
-          >
-            <div className="circle">{index + 1}</div>
-            <p>{stage}</p>
-            {index < stages.length - 1 && <div className="line"></div>}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 const MyOrders = () => {
   const { clearCart } = useCart();
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
-  
-  const status = queryParams.get('status');
-  const orderId = queryParams.get('orderId');
-  const method = queryParams.get('method');
+
+  const orderIdFromQuery = queryParams.get('orderId') || queryParams.get('order_id');
+
+  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState([]);
+  const [actionOrderId, setActionOrderId] = useState('');
+  const [message, setMessage] = useState('');
+
+  const isCurrentOrder = (status) => !['Cancelled', 'Delivered', 'Failed'].includes(status);
+
+  const { currentOrders, previousOrders } = useMemo(() => {
+    const current = orders.filter((o) => isCurrentOrder(o.status));
+    const previous = orders.filter((o) => !isCurrentOrder(o.status));
+    return { currentOrders: current, previousOrders: previous };
+  }, [orders]);
+
+  const canCancelOrder = (status) => !['Cancelled', 'Delivered', 'Shipped', 'Failed'].includes(status);
+  const trackingStages = ['Order Placed', 'Packed', 'Shipped', 'Delivered'];
+
+  const loadOrders = async () => {
+    const { data } = await fetchMyOrders();
+    setOrders(data?.orders || []);
+  };
 
   useEffect(() => {
-    // Automatically clear the cart when landing here after a success
-    if (status === 'success' && clearCart) {
-      clearCart();
+    const init = async () => {
+      try {
+        setLoading(true);
+        if (orderIdFromQuery) {
+          const verify = await verifyCashfreeOrder(orderIdFromQuery);
+          if (verify?.data?.paid) {
+            clearCart();
+            setMessage('Payment verified and your order is now in the list below.');
+          }
+        }
+        await loadOrders();
+      } catch (err) {
+        setMessage('Some order data could not be loaded right now.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    init();
+  }, [orderIdFromQuery, clearCart]);
+
+  const handleCancelOrder = async (order) => {
+    const reason = window.prompt('Optional: reason for cancellation', '') || '';
+    try {
+      setActionOrderId(order._id);
+      await cancelMyOrder(order._id, reason);
+      await loadOrders();
+      setMessage('Order cancelled successfully.');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Unable to cancel this order.');
+    } finally {
+      setActionOrderId('');
     }
-  }, [status, clearCart]);
+  };
+
+  const renderOrderCard = (order) => (
+    <div className="order-card" key={order._id}>
+      <div className="order-card-head">
+        <div>
+          <h4>Order #{order.cashfreeOrderId || order._id?.slice(-8)}</h4>
+          <p>{new Date(order.createdAt).toLocaleString('en-IN')}</p>
+        </div>
+        <div className={`status-pill status-${(order.status || '').toLowerCase()}`}>{order.status}</div>
+      </div>
+
+      <div className="order-grid">
+        <div>
+          <strong>Amount:</strong> Rs {Number(order.totalAmount || 0).toLocaleString()}
+        </div>
+        <div>
+          <strong>Payment:</strong> {(order.paymentMethod || 'online').toUpperCase()}
+        </div>
+        <div>
+          <strong>Payment Status:</strong> {order.paymentStatus || 'UNKNOWN'}
+        </div>
+        <div>
+          <strong>Items:</strong> {order.items?.length || 0}
+        </div>
+      </div>
+
+      <div className="order-items">
+        <strong>Products:</strong>{' '}
+        {(order.items || []).slice(0, 3).map((item) => item.name).join(', ') || 'No items'}
+        {order.items?.length > 3 ? ` +${order.items.length - 3} more` : ''}
+      </div>
+
+      <div className="tracking-block">
+        <strong>Tracking:</strong>
+        <div className="tracking-steps">
+          {trackingStages.map((stage) => {
+            const currentIndex = trackingStages.indexOf(order.trackingStage || 'Order Placed');
+            const stageIndex = trackingStages.indexOf(stage);
+            const done = stageIndex <= currentIndex;
+            return (
+              <div className={`tracking-step ${done ? 'done' : ''}`} key={`${order._id}_${stage}`}>
+                <span className="dot">{stageIndex + 1}</span>
+                <span className="text">{stage}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {order.address?.fullAddress && (
+        <div className="order-address">
+          <strong>Delivery Address:</strong> {order.address.fullAddress}, {order.address.pinCode}
+        </div>
+      )}
+
+      {order.status === 'Cancelled' && order.cancellationReason && (
+        <div className="cancel-note">
+          <strong>Cancellation Note:</strong> {order.cancellationReason}
+        </div>
+      )}
+
+      <div className="order-actions">
+        {canCancelOrder(order.status) && (
+          <button
+            className="cancel-order-btn"
+            disabled={actionOrderId === order._id}
+            onClick={() => handleCancelOrder(order)}
+          >
+            {actionOrderId === order._id ? 'Cancelling...' : 'Cancel Order'}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
+  if (loading) {
+    return (
+      <div className="my-orders-page">
+        <div className="orders-shell">Loading your orders...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="my-orders-page">
-      {status === 'success' ? (
-        <div className="order-success-container">
-          <div className="success-card">
-            <div className="success-icon">✅</div>
-            <h2>Order Placed Successfully!</h2>
-            <p className="order-number">Order ID: <strong>#{orderId}</strong></p>
-            
-            {/* --- Receipt Style Info Box --- */}
-            <div className="receipt-details">
-                <div className="receipt-row">
-                    <span>Date:</span>
-                    <span>{new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                </div>
-                <div className="receipt-row">
-                    <span>Payment Method:</span>
-                    <span className="method-badge">{method?.toUpperCase() || 'UPI'}</span>
-                </div>
-                <div className="receipt-row total-row">
-                    <span>Payment Status:</span>
-                    <span className="status-text">
-                        {method === 'upi' ? 'Pending Verification' : 'Confirmed'}
-                    </span>
-                </div>
-            </div>
-
-            {method === 'upi' && (
-              <div className="verification-banner">
-                <p>📷 Screenshot uploaded. Our team is verifying the transaction. Your items will be packed shortly!</p>
-              </div>
-            )}
-
-            <OrderTimeline currentStage="Order Placed" />
-
-            <button className="continue-btn" onClick={() => navigate('/')}>
-              Continue Shopping
-            </button>
-          </div>
+      <div className="orders-shell">
+        <div className="orders-header">
+          <h2>My Orders</h2>
+          <button className="continue-btn" onClick={() => navigate('/')}>Continue Shopping</button>
         </div>
-      ) : (
-        <div className="no-orders">
-          <div className="no-orders-content">
-            <h2>Your Orders</h2>
-            <div className="empty-orders-msg">
-                <div className="empty-icon">📦</div>
-                <p>You haven't placed any orders yet.</p>
-                <button className="browse-btn" onClick={() => navigate('/')}>
-                    Browse Latest Tech
-                </button>
-            </div>
-          </div>
-        </div>
-      )}
+
+        {message && <p className="orders-message">{message}</p>}
+
+        <section className="orders-section">
+          <h3>Current Orders</h3>
+          {currentOrders.length === 0 ? (
+            <div className="empty-orders">No current orders.</div>
+          ) : (
+            currentOrders.map(renderOrderCard)
+          )}
+        </section>
+
+        <section className="orders-section">
+          <h3>Previous Orders</h3>
+          {previousOrders.length === 0 ? (
+            <div className="empty-orders">No previous orders yet.</div>
+          ) : (
+            previousOrders.map(renderOrderCard)
+          )}
+        </section>
+      </div>
     </div>
   );
 };

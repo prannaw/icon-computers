@@ -7,28 +7,41 @@ const Navbar = () => {
   const { cartItems } = useCart() || { cartItems: [] };
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  
+  const [userData, setUserData] = useState(() => JSON.parse(localStorage.getItem('user')));
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Retrieve user data
-  const storageData = JSON.parse(localStorage.getItem('user'));
-  const userRole = storageData?.role || storageData?.result?.role;
+  const userRole = userData?.role || userData?.result?.role;
   const isAdmin = userRole === 'admin';
-  const fullUserName = storageData?.name || storageData?.result?.name || 'User';
+  const fullUserName =
+    userData?.username ||
+    userData?.result?.username ||
+    userData?.name ||
+    userData?.result?.name ||
+    'User';
   const firstName = fullUserName.split(' ')[0];
 
-  // SYNC SEARCH BAR WITH URL (Optional but pro: if you refresh, the search text stays in the box)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     setSearchTerm(params.get('search') || '');
     setSelectedCategory(params.get('category') || 'all');
   }, [location.search]);
 
+  useEffect(() => {
+    const refreshUser = () => {
+      setUserData(JSON.parse(localStorage.getItem('user')));
+    };
+    window.addEventListener('storage', refreshUser);
+    window.addEventListener('user-updated', refreshUser);
+    return () => {
+      window.removeEventListener('storage', refreshUser);
+      window.removeEventListener('user-updated', refreshUser);
+    };
+  }, []);
+
   const handleSearch = (e) => {
     e.preventDefault();
-    // Navigates to Home with query parameters
-    // If searchTerm is empty, it still sends 'all' category to reset view
     if (!searchTerm && selectedCategory === 'all') {
       navigate('/');
     } else {
@@ -39,9 +52,8 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-    // Clear cart or other states if necessary here
     navigate('/login');
-    window.location.reload(); 
+    window.location.reload();
   };
 
   return (
@@ -60,14 +72,12 @@ const Navbar = () => {
       <div className="main-nav">
         <div className="container nav-content">
           <Link to="/" className="logo-container">
-            <span className="text-logo">
-              ICON COMPUTERS
-            </span>
+            <span className="text-logo">ICON COMPUTERS</span>
           </Link>
 
           <form className="search-container" onSubmit={handleSearch}>
-            <select 
-              className="category-select" 
+            <select
+              className="category-select"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
@@ -81,14 +91,14 @@ const Navbar = () => {
               <option value="KEYBOARDS">Keyboards</option>
               <option value="CABLES">Cables</option>
             </select>
-            
-            <input 
-              type="text" 
-              placeholder="Search for hardware, brands..." 
+
+            <input
+              type="text"
+              placeholder="Search for hardware, brands..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            
+
             <button type="submit" className="search-btn">Search</button>
           </form>
 
@@ -97,28 +107,28 @@ const Navbar = () => {
               <>
                 <Link to="/admin-dashboard" className="dashboard-link">Dashboard</Link>
                 <Link to="/admin-add" className="admin-quick-add">
-                   <span>+ Add</span>
+                  <span>+ Add</span>
                 </Link>
               </>
             )}
 
-            {storageData ? (
+            {userData ? (
               <div className="profile-container">
-                <div className="action-item">
+                <Link to="/profile" className="action-item">
                   <div className="action-icon-wrapper">
-                    <span className="action-icon">👤</span>
+                    <span className="action-icon">U</span>
                   </div>
                   <div className="action-text">
                     <span className="label">Hello,</span>
                     <span className="sub-label">{firstName}</span>
                   </div>
-                </div>
+                </Link>
                 <button onClick={handleLogout} className="nav-logout-btn">Logout</button>
               </div>
             ) : (
               <Link to="/login" className="action-item">
                 <div className="action-icon-wrapper">
-                  <span className="action-icon">👤</span>
+                  <span className="action-icon">U</span>
                 </div>
                 <div className="action-text">
                   <span className="label">Login</span>
@@ -127,18 +137,22 @@ const Navbar = () => {
               </Link>
             )}
 
-            <Link to="/cart" className="action-item">
+            <Link to="/cart" className="action-item cart-action-item">
               <div className="action-icon-wrapper">
-                <span className="action-icon">🛒</span>
+                <span className="action-icon cart-icon" aria-hidden="true">🛒</span>
                 {cartItems.length > 0 && (
                   <span className="cart-badge">{cartItems.length}</span>
                 )}
               </div>
-              <div className="action-text">
+              <div className="action-text cart-text">
                 <span className="label">Your</span>
                 <span className="sub-label">Cart</span>
               </div>
             </Link>
+
+            {userData && (
+              <Link to="/my-orders" className="orders-link">My Orders</Link>
+            )}
           </div>
         </div>
       </div>

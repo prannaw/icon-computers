@@ -1,23 +1,25 @@
 import axios from 'axios';
 
-// baseURL points to your backend server
-const API = axios.create({ baseURL: 'http://localhost:5000/api' });
+const rawApiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
+const normalizedApiBaseUrl = rawApiBaseUrl.replace(/\/+$/, '');
 
-// Request Interceptor for Auth
+const API = axios.create({ baseURL: normalizedApiBaseUrl });
+
 API.interceptors.request.use((req) => {
     const storageData = localStorage.getItem('user');
+    const tokenFromStorage = localStorage.getItem('token');
     if (storageData) {
         const parsedData = JSON.parse(storageData);
-        // Supports both structured { result, token } and flat { token } storage
-        const token = parsedData?.token || parsedData?.result?.token;
+        const token = parsedData?.token || parsedData?.result?.token || tokenFromStorage;
         if (token) {
             req.headers.Authorization = `Bearer ${token}`;
         }
+    } else if (tokenFromStorage) {
+        req.headers.Authorization = `Bearer ${tokenFromStorage}`;
     }
     return req;
 });
 
-// Response Interceptor for cleaner error logging
 API.interceptors.response.use(
     (response) => response,
     (error) => {
@@ -27,43 +29,39 @@ API.interceptors.response.use(
     }
 );
 
-// --- Auth API ---
 export const login = (formData) => API.post('/auth/login', formData);
 export const signup = (formData) => API.post('/auth/signup', formData);
+export const fetchProfile = () => API.get('/auth/profile');
+export const updateProfile = (profileData) => API.put('/auth/profile', profileData);
 
-// --- Products API ---
-/**
- * fetchProducts: Supports category, search, and sort params.
- */
 export const fetchProducts = (params) => API.get('/products', { params });
-
-/**
- * Single Product & Inventory Management
- */
 export const fetchProductDetails = (id) => API.get(`/products/${id}`);
 export const addProduct = (productData) => API.post('/products', productData);
-
-// The core function for your "Modify" button
 export const updateProduct = (id, updatedData) => API.put(`/products/${id}`, updatedData);
-
 export const deleteProduct = (id) => API.delete(`/products/${id}`);
 
-// --- Orders API (NEW) ---
-/**
- * placeOrder: Sends order details (items, total, address) to the server.
- * This is what makes the "Revenue" count go up in the Dashboard.
- */
 export const placeOrder = (orderData) => API.post('/products/order', orderData);
+export const fetchMyOrders = () => API.get('/products/orders/my');
+export const cancelMyOrder = (orderId, reason) =>
+  API.patch(`/products/orders/${orderId}/cancel`, { reason });
 
-// --- Reviews API ---
+export const createCashfreeOrder = (paymentData) =>
+  API.post('/products/payment/cashfree/create-order', paymentData);
+
+export const verifyCashfreeOrder = (orderId) =>
+  API.post('/products/payment/cashfree/verify', { orderId });
+
 export const fetchReviews = (productId) => API.get(`/products/${productId}/reviews`);
 export const postReview = (productId, reviewData) => API.post(`/products/${productId}/reviews`, reviewData);
 export const deleteReview = (reviewId) => API.delete(`/products/delete/${reviewId}`);
 
-// --- Admin Stats API ---
-/**
- * fetchAdminStats: Fetches dashboard data: Total Users, Revenue, Inventory Count, Top Category.
- */
 export const fetchAdminStats = () => API.get('/products/admin/stats');
+export const fetchAdminRevenueTrend = (months = 6) =>
+  API.get('/products/admin/revenue-trend', { params: { months } });
+export const fetchAdminOrders = () => API.get('/products/admin/orders');
+export const updateAdminOrderTracking = (orderId, trackingStage) =>
+  API.patch(`/products/admin/orders/${orderId}/tracking`, { trackingStage });
+export const fetchAdminUsers = () => API.get('/products/admin/users');
+export const fetchAdminVerifications = () => API.get('/products/admin/verifications');
 
 export default API;

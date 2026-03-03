@@ -1,27 +1,66 @@
 const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    // These pull automatically from your .env file
-    user: process.env.EMAIL_USER, 
-    pass: process.env.EMAIL_PASS  
-  },
-});
+let transporter = null;
+let verifyTriggered = false;
 
-// Verify the connection configuration on startup
-transporter.verify(function (error, success) {
-  if (error) {
-    console.error("SMTP Configuration Error:", error);
-  } else {
-    console.log("Mail Server is ready to send OTPs");
+const getMailConfig = () => {
+  const smtpHost = process.env.SMTP_HOST || 'smtp-relay.brevo.com';
+  const smtpPort = Number(process.env.SMTP_PORT || 587);
+  const smtpSecure = String(process.env.SMTP_SECURE || 'false').toLowerCase() === 'true';
+
+  // Backward compatible with older env keys.
+  const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER;
+  const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+  const fromEmail = process.env.MAIL_FROM || smtpUser;
+
+  if (!smtpUser || !smtpPass) {
+    throw new Error(
+      'SMTP is not configured. Set SMTP_USER and SMTP_PASS in server/.env (or EMAIL_USER/EMAIL_PASS as legacy fallback).'
+    );
   }
-});
+
+  return {
+    smtpHost,
+    smtpPort,
+    smtpSecure,
+    smtpUser,
+    smtpPass,
+    fromEmail
+  };
+};
+
+const getTransporter = () => {
+  if (transporter) return transporter;
+
+  const cfg = getMailConfig();
+  transporter = nodemailer.createTransport({
+    host: cfg.smtpHost,
+    port: cfg.smtpPort,
+    secure: cfg.smtpSecure, // true for 465, false for 587/2525
+    auth: {
+      user: cfg.smtpUser,
+      pass: cfg.smtpPass
+    }
+  });
+
+  if (!verifyTriggered) {
+    verifyTriggered = true;
+    transporter.verify((error) => {
+      if (error) {
+        console.error('SMTP Configuration Error:', error.message);
+      } else {
+        console.log('Mail server is ready to send OTPs');
+      }
+    });
+  }
+
+  return transporter;
+};
 
 const sendOTPEmail = async (email, otp) => {
+  const cfg = getMailConfig();
   const mailOptions = {
-    // It is best to use your actual EMAIL_USER here to avoid spam filters
-    from: `"ICON Computers" <${process.env.EMAIL_USER}>`,
+    from: `"ICON Computers" <${cfg.fromEmail}>`,
     to: email,
     subject: 'Verify Your Account - ICON Computers',
     html: `
@@ -50,7 +89,8 @@ const sendOTPEmail = async (email, otp) => {
     `,
   };
 
-  return transporter.sendMail(mailOptions);
+  const mailTransporter = getTransporter();
+  return mailTransporter.sendMail(mailOptions);
 };
 
 module.exports = { sendOTPEmail };

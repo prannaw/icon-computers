@@ -1,11 +1,11 @@
 .sidebar {
   width: 260px;
-  background-color: #ffffff;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
   padding: 25px;
   height: fit-content;
   border-radius: 12px;
-  border: 1px solid #eaeaea;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  border: 1px solid #dbe4ef;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
 .sidebar h3 {
@@ -13,8 +13,8 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 20px;
-  color: #333;
-  border-bottom: 2px solid #007bff;
+  color: #1e293b;
+  border-bottom: 2px solid #2563eb;
   padding-bottom: 8px;
 }
 
@@ -30,7 +30,7 @@
 
 .sidebar a {
   text-decoration: none;
-  color: #555;
+  color: #475569;
   font-size: 1rem;
   font-weight: 500;
   transition: all 0.2s ease;
@@ -38,17 +38,17 @@
 }
 
 .sidebar a:hover {
-  color: #007bff;
+  color: #2563eb;
   transform: translateX(5px);
 }
 
 .sidebar-promo {
   margin-top: 30px;
   padding: 15px;
-  background: #e7f3ff;
+  background: #eff6ff;
   border-radius: 8px;
   font-size: 0.85rem;
-  color: #0056b3;
+  color: #1e3a8a;
   font-weight: 600;
-  border-left: 4px solid #007bff;
+  border-left: 4px solid #2563eb;
 }

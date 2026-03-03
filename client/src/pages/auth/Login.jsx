@@ -12,14 +12,9 @@ const Login = () => {
         e.preventDefault();
         try {
             const { data } = await API.post('/auth/login', formData);
-            
-            /**
-             * synchronization fix:
-             * 1. Changed key from 'profile' to 'user' to match App.jsx.
-             * 2. We store data.user if your backend wraps it, otherwise the whole data object.
-             */
-            const userData = data.user || data;
+            const userData = { ...(data.user || data), token: data.token };
             localStorage.setItem('user', JSON.stringify(userData));
+            localStorage.setItem('token', data.token);
 
             // Using window.location.href instead of navigate('/') forces a 
             // full app refresh so App.jsx picks up the 'admin' role immediately.

@@ -59,7 +59,7 @@ const OTPVerify = () => {
             
             // Success: Store data and redirect
             localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user)); 
+            localStorage.setItem('user', JSON.stringify({ ...data.user, token: data.token })); 
             
             navigate('/');
             window.location.reload(); 

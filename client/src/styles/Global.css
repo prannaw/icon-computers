@@ -1,48 +1,35 @@
 :root {
-  --bg-dark: #0a0a0b;
-  --accent: #00d2ff;
-  --card-bg: #161618;
-  --text: #ffffff;
-  --glass: rgba(255, 255, 255, 0.05);
+  --bg-primary: #0b1220;
+  --bg-secondary: #111a2b;
+  --card-surface: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #5b6474;
+  --accent: #00b7ff;
+  --accent-strong: #0a8fe6;
+  --line: #dbe4ef;
+  --glow: rgba(0, 183, 255, 0.25);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
 }
 
 body {
-  background-color: var(--bg-dark);
-  color: var(--text);
-  margin: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  color: var(--text-primary);
+  background:
+    radial-gradient(1000px 500px at -10% -10%, rgba(0, 183, 255, 0.16), transparent 60%),
+    radial-gradient(900px 450px at 110% 0%, rgba(21, 94, 239, 0.15), transparent 55%),
+    linear-gradient(180deg, #f3f8ff 0%, #eef5ff 100%);
 }
 
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 20px 0;
+a {
+  color: inherit;
 }
-
-.bento-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, 200px);
-  gap: 15px;
-  margin-bottom: 40px;
-}
-
-.bento-item {
-  background: var(--card-bg);
-  border: 1px solid var(--glass);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  transition: transform 0.3s;
-}
-
-.bento-item:hover {
-  transform: scale(1.02);
-  border-color: var(--accent);
-}
-
-.large { grid-column: span 2; grid-row: span 2; }
-.medium { grid-column: span 2; }

@@ -1,10 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import '../styles/ProductCard.css';
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   // --- DEBUGGING: Remove this once ratings appear ---
   // console.log(`Product: ${product.name} | Rating: ${product.averageRating}`);
@@ -33,6 +34,16 @@ const ProductCard = ({ product }) => {
       }
     }
     return stars;
+  };
+
+  const handleAddToCart = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+      alert('Please login to add products to cart.');
+      navigate('/login');
+      return;
+    }
+    addToCart(product);
   };
 
   return (
@@ -85,7 +96,7 @@ const ProductCard = ({ product }) => {
           
           <button 
             className="add-btn" 
-            onClick={() => addToCart(product)}
+            onClick={handleAddToCart}
             disabled={product.stock <= 0}
           >
             {product.stock <= 0 ? "Sold Out" : "Add to Cart"}
