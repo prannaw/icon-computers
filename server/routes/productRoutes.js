@@ -139,6 +139,48 @@ router.get('/admin/users', authRequired, async (req, res) => {
   }
 });
 
+router.patch('/admin/users/:userId/role', authRequired, async (req, res) => {
+  try {
+    if (req.userRole !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required.' });
+    }
+
+    const { userId } = req.params;
+    const nextRole = String(req.body?.role || '').toLowerCase().trim();
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: 'Invalid user id.' });
+    }
+
+    if (!['user', 'admin'].includes(nextRole)) {
+      return res.status(400).json({ message: 'Role must be either user or admin.' });
+    }
+
+    if (String(req.userId) === String(userId) && nextRole !== 'admin') {
+      return res.status(400).json({ message: 'You cannot remove your own admin role.' });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: { role: nextRole } },
+      { new: true }
+    )
+      .select('username email role isVerified isBlocked createdAt')
+      .lean();
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    return res.json({
+      message: 'User role updated successfully.',
+      user: updatedUser
+    });
+  } catch (err) {
+    return res.status(500).json({ message: 'Failed to update user role.' });
+  }
+});
+
 router.get('/admin/verifications', authRequired, async (req, res) => {
   try {
     if (req.userRole !== 'admin') {

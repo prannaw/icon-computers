@@ -65,6 +65,8 @@ export const fetchAdminOrders = () => API.get('/products/admin/orders');
 export const updateAdminOrderTracking = (orderId, trackingStage) =>
   API.patch(`/products/admin/orders/${orderId}/tracking`, { trackingStage });
 export const fetchAdminUsers = () => API.get('/products/admin/users');
+export const updateAdminUserRole = (userId, role) =>
+  API.patch(`/products/admin/users/${userId}/role`, { role });
 export const fetchAdminVerifications = () => API.get('/products/admin/verifications');
 
 export default API;
