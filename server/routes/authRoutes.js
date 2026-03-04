@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { sendOTPEmail } = require('../utils/otpService');
+const { sendOTPEmail, sendPasswordResetOTPEmail } = require('../utils/otpService');
 
 const authRequired = (req, res, next) => {
   try {
@@ -37,13 +37,16 @@ const getSafeUserPayload = (user) => ({
   }
 });
 
+const isValidPasswordLength = (password) =>
+  typeof password === 'string' && password.length >= 6 && password.length <= 15;
+
 // --- SIGNUP (Creates Pending User & Sends OTP) ---
 router.post('/signup', async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
     // 1. PASSWORD LENGTH VALIDATION (6-15 Characters)
-    if (password.length < 6 || password.length > 15) {
+    if (!isValidPasswordLength(password)) {
       return res.status(400).json({ 
         msg: "Password must be between 6 and 15 characters long." 
       });
@@ -131,6 +134,69 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+// --- FORGOT PASSWORD (REQUEST OTP) ---
+router.post('/forgot-password/request', async (req, res) => {
+  try {
+    const email = String(req.body?.email || '').trim().toLowerCase();
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required.' });
+    }
+
+    const user = await User.findOne({ email });
+    if (user && user.isVerified) {
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      user.resetOtp = otp;
+      user.resetOtpExpires = Date.now() + 10 * 60 * 1000;
+      await user.save();
+      await sendPasswordResetOTPEmail(email, otp);
+    }
+
+    return res.status(200).json({
+      message: 'If your email is registered, an OTP has been sent.'
+    });
+  } catch (err) {
+    return res.status(500).json({ message: 'Unable to process forgot password request.' });
+  }
+});
+
+// --- FORGOT PASSWORD (VERIFY OTP & RESET PASSWORD) ---
+router.post('/forgot-password/verify', async (req, res) => {
+  try {
+    const email = String(req.body?.email || '').trim().toLowerCase();
+    const otp = String(req.body?.otp || '').trim();
+    const newPassword = String(req.body?.newPassword || '');
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: 'Email, OTP and new password are required.' });
+    }
+
+    if (!isValidPasswordLength(newPassword)) {
+      return res.status(400).json({ message: 'Password must be between 6 and 15 characters long.' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired OTP.' });
+    }
+
+    if (!user.resetOtp || user.resetOtp !== otp || !user.resetOtpExpires || user.resetOtpExpires < Date.now()) {
+      return res.status(400).json({ message: 'Invalid or expired OTP.' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    user.resetOtp = undefined;
+    user.resetOtpExpires = undefined;
+    await user.save();
+
+    return res.status(200).json({ message: 'Password reset successful. You can now login.' });
+  } catch (err) {
+    return res.status(500).json({ message: 'Failed to reset password.' });
+  }
+});
+
 // --- VERIFY OTP (Activates Account) ---
 router.post('/verify-otp', async (req, res) => {
   try {
@@ -202,7 +268,7 @@ router.post('/login', async (req, res) => {
 // --- PROFILE (Authenticated) ---
 router.get('/profile', authRequired, async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select('-password -otp -otpExpires');
+    const user = await User.findById(req.userId).select('-password -otp -otpExpires -resetOtp -resetOtpExpires');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -237,7 +303,7 @@ router.put('/profile', authRequired, async (req, res) => {
       req.userId,
       { $set: updateData },
       { new: true, runValidators: true }
-    ).select('-password -otp -otpExpires');
+    ).select('-password -otp -otpExpires -resetOtp -resetOtpExpires');
 
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
@@ -249,6 +315,44 @@ router.put('/profile', authRequired, async (req, res) => {
     });
   } catch (err) {
     return res.status(400).json({ message: 'Failed to update profile', error: err.message });
+  }
+});
+
+router.patch('/change-password', authRequired, async (req, res) => {
+  try {
+    const currentPassword = String(req.body?.currentPassword || '');
+    const newPassword = String(req.body?.newPassword || '');
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current and new password are required.' });
+    }
+
+    if (!isValidPasswordLength(newPassword)) {
+      return res.status(400).json({ message: 'Password must be between 6 and 15 characters long.' });
+    }
+
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect.' });
+    }
+
+    const sameAsOld = await bcrypt.compare(newPassword, user.password);
+    if (sameAsOld) {
+      return res.status(400).json({ message: 'New password must be different from current password.' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    return res.json({ message: 'Password changed successfully.' });
+  } catch (err) {
+    return res.status(500).json({ message: 'Failed to change password.' });
   }
 });
 

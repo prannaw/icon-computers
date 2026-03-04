@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchProfile, updateProfile } from '../../api';
+import { changePassword, fetchProfile, updateProfile } from '../../api';
 import '../../styles/Profile.css';
 
 const Profile = () => {
@@ -7,6 +7,14 @@ const Profile = () => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordMessage, setPasswordMessage] = useState('');
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
 
   const [formData, setFormData] = useState({
     username: '',
@@ -103,6 +111,45 @@ const Profile = () => {
     }
   };
 
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setPasswordError('');
+    setPasswordMessage('');
+
+    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
+      setPasswordError('All password fields are required.');
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 6 || passwordForm.newPassword.length > 15) {
+      setPasswordError('New password must be between 6 and 15 characters.');
+      return;
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError('New password and confirm password must match.');
+      return;
+    }
+
+    setPasswordSaving(true);
+    try {
+      const { data } = await changePassword({
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword
+      });
+      setPasswordMessage(data?.message || 'Password changed successfully.');
+      setPasswordForm({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+    } catch (err) {
+      setPasswordError(err.response?.data?.message || 'Failed to change password.');
+    } finally {
+      setPasswordSaving(false);
+    }
+  };
+
   if (loading) {
     return <div className="profile-page"><div className="profile-card">Loading profile...</div></div>;
   }
@@ -190,6 +237,54 @@ const Profile = () => {
 
         <button className="profile-save-btn" type="submit" disabled={saving}>
           {saving ? 'Saving...' : 'Save Changes'}
+        </button>
+      </form>
+
+      <form className="profile-card profile-password-card" onSubmit={handlePasswordChange}>
+        <h2>Change Password</h2>
+        <p className="profile-subtitle">Use your current password to set a new one.</p>
+
+        {passwordError && <p className="profile-error">{passwordError}</p>}
+        {passwordMessage && <p className="profile-success">{passwordMessage}</p>}
+
+        <div className="profile-grid">
+          <div className="profile-field">
+            <label>Current Password</label>
+            <input
+              type="password"
+              value={passwordForm.currentPassword}
+              onChange={(e) => setPasswordForm((prev) => ({ ...prev, currentPassword: e.target.value }))}
+              required
+            />
+          </div>
+
+          <div className="profile-field">
+            <label>New Password (6-15)</label>
+            <input
+              type="password"
+              value={passwordForm.newPassword}
+              onChange={(e) => setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))}
+              minLength={6}
+              maxLength={15}
+              required
+            />
+          </div>
+
+          <div className="profile-field full-width">
+            <label>Confirm New Password</label>
+            <input
+              type="password"
+              value={passwordForm.confirmPassword}
+              onChange={(e) => setPasswordForm((prev) => ({ ...prev, confirmPassword: e.target.value }))}
+              minLength={6}
+              maxLength={15}
+              required
+            />
+          </div>
+        </div>
+
+        <button className="profile-save-btn" type="submit" disabled={passwordSaving}>
+          {passwordSaving ? 'Updating Password...' : 'Update Password'}
         </button>
       </form>
     </div>

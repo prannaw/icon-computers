@@ -34,8 +34,11 @@ API.interceptors.response.use(
 
 export const login = (formData) => API.post('/auth/login', formData);
 export const signup = (formData) => API.post('/auth/signup', formData);
+export const requestPasswordResetOtp = (email) => API.post('/auth/forgot-password/request', { email });
+export const verifyPasswordResetOtp = (payload) => API.post('/auth/forgot-password/verify', payload);
 export const fetchProfile = () => API.get('/auth/profile');
 export const updateProfile = (profileData) => API.put('/auth/profile', profileData);
+export const changePassword = (payload) => API.patch('/auth/change-password', payload);
 
 export const fetchProducts = (params) => API.get('/products', { params });
 export const fetchProductDetails = (id) => API.get(`/products/${id}`);

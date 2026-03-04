@@ -5,6 +5,7 @@ import Navbar from './components/Navbar.jsx';
 import Signup from './pages/auth/Signup.jsx';
 import Login from './pages/auth/Login.jsx';
 import OTPVerify from './pages/auth/OTP.jsx';
+import ForgotPassword from './pages/auth/ForgotPassword.jsx';
 import Cart from './pages/user/Cart.jsx';
 import Checkout from './pages/user/Checkout.jsx';
 import ProductDetails from './pages/user/ProductDetails.jsx';
@@ -31,6 +32,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/otp" element={<OTPVerify />} />
           <Route path="/cart" element={isLoggedIn ? <Cart /> : <Navigate to="/login" replace />} />
           <Route path="/checkout" element={isLoggedIn ? <Checkout /> : <Navigate to="/login" replace />} />

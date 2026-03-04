@@ -122,6 +122,34 @@
     animation: shake 0.4s ease-in-out;
 }
 
+.success-msg {
+    background: #ecfdf3;
+    color: #166534;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #bbf7d0;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.forgot-link-wrap {
+    margin-top: 8px;
+    text-align: right;
+}
+
+.forgot-link {
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+    color: #1d4ed8;
+}
+
 /* --- OTP SPECIFIC STYLES --- */
 .otp-input-container {
     display: flex;

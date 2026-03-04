@@ -69,6 +69,16 @@ const getTransporter = () => {
   return transporter;
 };
 
+const sendMailWithTimeout = async (mailOptions) => {
+  const mailTransporter = getTransporter();
+  return Promise.race([
+    mailTransporter.sendMail(mailOptions),
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('SMTP timeout. Please verify SMTP settings and try again.')), 20000);
+    })
+  ]);
+};
+
 const sendOTPEmail = async (email, otp) => {
   const cfg = getMailConfig();
   const mailOptions = {
@@ -101,13 +111,32 @@ const sendOTPEmail = async (email, otp) => {
     `,
   };
 
-  const mailTransporter = getTransporter();
-  return Promise.race([
-    mailTransporter.sendMail(mailOptions),
-    new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('SMTP timeout. Please verify SMTP settings and try again.')), 20000);
-    })
-  ]);
+  return sendMailWithTimeout(mailOptions);
 };
 
-module.exports = { sendOTPEmail };
+const sendPasswordResetOTPEmail = async (email, otp) => {
+  const cfg = getMailConfig();
+  const mailOptions = {
+    from: `"ICON Computers" <${cfg.fromEmail}>`,
+    to: email,
+    subject: 'Password Reset OTP - ICON Computers',
+    html: `
+      <div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;padding:20px;border:1px solid #dbe4ef;border-radius:12px;background:#ffffff;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <h1 style="color:#2563eb;margin:0;font-size:28px;">ICON Computers</h1>
+          <p style="color:#64748b;font-size:14px;margin-top:6px;">Password Reset Request</p>
+        </div>
+        <p style="font-size:15px;color:#334155;line-height:1.5;">We received a request to reset your account password.</p>
+        <p style="font-size:15px;color:#334155;line-height:1.5;">Use this OTP to continue:</p>
+        <div style="background:#f8fbff;padding:22px;text-align:center;border-radius:10px;margin:24px 0;border:1px solid #dbe4ef;">
+          <span style="font-size:34px;font-weight:800;color:#0f172a;letter-spacing:8px;font-family:monospace;">${otp}</span>
+        </div>
+        <p style="font-size:14px;color:#64748b;">This OTP is valid for 10 minutes. If this was not you, please ignore this email.</p>
+      </div>
+    `
+  };
+
+  return sendMailWithTimeout(mailOptions);
+};
+
+module.exports = { sendOTPEmail, sendPasswordResetOTPEmail };

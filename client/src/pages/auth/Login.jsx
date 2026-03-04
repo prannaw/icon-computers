@@ -51,6 +51,9 @@ const Login = () => {
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })} 
                             required 
                         />
+                        <div className="forgot-link-wrap">
+                            <Link to="/forgot-password" className="forgot-link">Forgot password?</Link>
+                        </div>
                     </div>
 
                     <button type="submit" className="auth-btn">Login</button>
