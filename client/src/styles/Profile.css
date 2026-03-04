@@ -105,7 +105,25 @@
 }
 
 @media (max-width: 760px) {
+  .profile-page {
+    margin: 16px auto;
+    padding: 0 12px;
+  }
+
+  .profile-card {
+    padding: 16px;
+  }
+
+  .profile-card h2 {
+    font-size: 1.35rem;
+  }
+
   .profile-grid {
     grid-template-columns: 1fr;
+  }
+
+  .profile-save-btn {
+    width: 100%;
+    min-height: 44px;
   }
 }
