@@ -30,14 +30,14 @@
   overflow: hidden;
   cursor: pointer;
   transition: all 0.28s ease;
-  border: 1px solid #dbe4ef;
-  background: #fff;
+  border: 1px solid #c8d9f2;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%);
 }
 
 .category-item.active {
-  border: 1px solid #38bdf8;
+  border: 1px solid #67e8f9;
   transform: translateY(-4px);
-  box-shadow: 0 12px 26px rgba(56, 189, 248, 0.25);
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.2), 0 0 0 1px rgba(56, 189, 248, 0.2);
 }
 
 .category-item.active .cat-overlay {
@@ -134,7 +134,7 @@
   color: #0f172a;
   margin: 0;
   padding-left: 14px;
-  border-left: 4px solid #0ea5e9;
+  border-left: 4px solid #38bdf8;
   line-height: 1;
 }
 
@@ -173,10 +173,11 @@
 .empty-state {
   text-align: center;
   padding: 52px 20px;
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 14px;
   color: #4b5563;
-  border: 1px dashed #c7d2e2;
+  border: 1px dashed #bcd0ea;
+  box-shadow: 0 10px 24px rgba(30, 58, 138, 0.08);
 }
 
 .empty-state button {

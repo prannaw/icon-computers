@@ -1,13 +1,16 @@
 :root {
   --bg-primary: #0b1220;
   --bg-secondary: #111a2b;
+  --bg-elevated: #1e293b;
   --card-surface: #ffffff;
+  --card-soft: #f4f9ff;
   --text-primary: #0f172a;
   --text-secondary: #5b6474;
-  --accent: #00b7ff;
-  --accent-strong: #0a8fe6;
+  --accent: #38bdf8;
+  --accent-strong: #2563eb;
   --line: #dbe4ef;
-  --glow: rgba(0, 183, 255, 0.25);
+  --line-strong: #bfd6f5;
+  --glow: rgba(56, 189, 248, 0.28);
 }
 
 * {
@@ -25,9 +28,24 @@ body {
   font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
   color: var(--text-primary);
   background:
-    radial-gradient(1000px 500px at -10% -10%, rgba(0, 183, 255, 0.16), transparent 60%),
-    radial-gradient(900px 450px at 110% 0%, rgba(21, 94, 239, 0.15), transparent 55%),
-    linear-gradient(180deg, #f3f8ff 0%, #eef5ff 100%);
+    radial-gradient(1200px 700px at -15% -10%, rgba(56, 189, 248, 0.2), transparent 60%),
+    radial-gradient(1000px 620px at 110% 0%, rgba(37, 99, 235, 0.22), transparent 60%),
+    linear-gradient(180deg, #dbeafe 0%, #d9e7ff 100%);
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  background-image:
+    linear-gradient(rgba(14, 165, 233, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14, 165, 233, 0.12) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(circle at center, black 35%, transparent 100%);
+  z-index: -1;
 }
 
 a {

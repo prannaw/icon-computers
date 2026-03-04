@@ -42,8 +42,8 @@
 
 /* --- IMAGE GALLERY --- */
 .image-gallery {
-  background: linear-gradient(180deg, #ffffff 0%, #f3f9ff 100%);
-  border: 1px solid #dbe4ef;
+  background: linear-gradient(180deg, #ffffff 0%, #edf6ff 100%);
+  border: 1px solid #c6d9f1;
   border-radius: 20px;
   display: flex;
   align-items: center;
@@ -170,10 +170,10 @@
 
 /* Write Review Container */
 .write-review-container {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f4f9ff 100%);
   padding: 25px;
   border-radius: 15px;
-  border: 1px solid #eee;
+  border: 1px solid #d8e4f4;
   margin-bottom: 40px;
 }
 
@@ -238,10 +238,10 @@
 
 /* Review Cards */
 .review-card {
-  background: #fff;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fcff 100%);
   padding: 25px;
   border-radius: 16px;
-  border: 1px solid #eee;
+  border: 1px solid #dce7f5;
   margin-bottom: 20px;
   transition: border-color 0.2s;
 }

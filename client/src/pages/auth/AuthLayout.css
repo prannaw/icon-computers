@@ -7,7 +7,7 @@
     background:
       radial-gradient(900px 420px at -8% -10%, rgba(14, 165, 233, 0.14), transparent 58%),
       radial-gradient(850px 400px at 108% 0%, rgba(37, 99, 235, 0.14), transparent 56%),
-      linear-gradient(180deg, #eef5ff 0%, #f7faff 100%);
+      linear-gradient(180deg, #dceafe 0%, #ebf2ff 100%);
     padding: 20px;
     font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
@@ -20,11 +20,11 @@
 
 /* Form Card */
 .auth-form {
-    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    background: linear-gradient(180deg, #ffffff 0%, #f3f8ff 100%);
     padding: 40px;
     border-radius: 16px;
     box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
-    border: 1px solid #dbe7f5;
+    border: 1px solid #cfe0f4;
 }
 
 .auth-form h2 {

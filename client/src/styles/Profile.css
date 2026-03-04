@@ -5,11 +5,11 @@
 }
 
 .profile-card {
-  background: linear-gradient(180deg, #fff 0%, #f8fbff 100%);
-  border: 1px solid #eaeef3;
+  background: linear-gradient(180deg, #fff 0%, #f3f8ff 100%);
+  border: 1px solid #d7e4f4;
   border-radius: 14px;
   padding: 24px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 10px 22px rgba(30, 58, 138, 0.09);
 }
 
 .profile-card h2 {
