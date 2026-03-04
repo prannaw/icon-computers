@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { cancelMyOrder, fetchMyOrders, verifyCashfreeOrder } from '../../api';
@@ -16,6 +16,12 @@ const MyOrders = () => {
   const [orders, setOrders] = useState([]);
   const [actionOrderId, setActionOrderId] = useState('');
   const [message, setMessage] = useState('');
+  const hasProcessedReturnRef = useRef(false);
+  const clearCartRef = useRef(clearCart);
+
+  useEffect(() => {
+    clearCartRef.current = clearCart;
+  }, [clearCart]);
 
   const isCurrentOrder = (status) => !['Cancelled', 'Delivered', 'Failed'].includes(status);
 
@@ -37,12 +43,14 @@ const MyOrders = () => {
     const init = async () => {
       try {
         setLoading(true);
-        if (orderIdFromQuery) {
+        if (orderIdFromQuery && !hasProcessedReturnRef.current) {
+          hasProcessedReturnRef.current = true;
           const verify = await verifyCashfreeOrder(orderIdFromQuery);
           if (verify?.data?.paid) {
-            clearCart();
+            clearCartRef.current();
             setMessage('Payment verified and your order is now in the list below.');
           }
+          navigate('/my-orders', { replace: true });
         }
         await loadOrders();
       } catch (err) {
@@ -53,7 +61,7 @@ const MyOrders = () => {
     };
 
     init();
-  }, [orderIdFromQuery, clearCart]);
+  }, [orderIdFromQuery, navigate]);
 
   const handleCancelOrder = async (order) => {
     const reason = window.prompt('Optional: reason for cancellation', '') || '';
