@@ -7,6 +7,7 @@ const Review = require('../models/Review');
 const User = require('../models/User');
 const Order = require('../models/Order');
 const authRequired = require('../middleware/auth');
+const { sendOrderStatusEmail } = require('../utils/orderStatusMailService');
 
 const CASHFREE_API_VERSION = process.env.CASHFREE_API_VERSION || '2023-08-01';
 const CASHFREE_ENV = (process.env.CASHFREE_ENV || 'sandbox').toLowerCase();
@@ -257,6 +258,8 @@ router.patch('/admin/orders/:orderId/tracking', authRequired, async (req, res) =
       return res.status(400).json({ message: 'Cancelled orders cannot be moved in tracking.' });
     }
 
+    const previousStage = order.trackingStage || 'Order Placed';
+
     order.trackingStage = trackingStage;
     order.trackingUpdatedAt = new Date();
     if (trackingStage === 'Order Placed') order.status = 'Success';
@@ -265,6 +268,34 @@ router.patch('/admin/orders/:orderId/tracking', authRequired, async (req, res) =
     if (trackingStage === 'Delivered') order.status = 'Delivered';
 
     await order.save();
+
+    if (trackingStage !== previousStage) {
+      try {
+        let customerEmail = order.customer?.email || '';
+        let customerName = order.customer?.name || '';
+
+        if (!customerEmail && order.userId && mongoose.Types.ObjectId.isValid(String(order.userId))) {
+          const user = await User.findById(order.userId).select('email username').lean();
+          customerEmail = user?.email || '';
+          customerName = customerName || user?.username || '';
+        }
+
+        const displayOrderId =
+          order.cashfreeOrderId || `ICON_LOCAL_${String(order._id).slice(-8).toUpperCase()}`;
+
+        if (customerEmail) {
+          await sendOrderStatusEmail({
+            toEmail: customerEmail,
+            customerName,
+            orderId: displayOrderId,
+            trackingStage
+          });
+        }
+      } catch (mailErr) {
+        console.error('Order status email error:', mailErr.message);
+      }
+    }
+
     return res.json({ message: 'Tracking stage updated.', order });
   } catch (err) {
     return res.status(400).json({ message: 'Failed to update tracking stage.' });
