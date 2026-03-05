@@ -7,9 +7,6 @@ const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
-  // --- DEBUGGING: Remove this once ratings appear ---
-  // console.log(`Product: ${product.name} | Rating: ${product.averageRating}`);
-
   // Normalize data to ensure numbers are used for calculation
   const avgRating = parseFloat(product.averageRating) || 0;
   const totalReviews = parseInt(product.reviewCount) || 0;
@@ -75,7 +72,6 @@ const ProductCard = ({ product }) => {
           <h3 className="product-name">{product.name}</h3>
         </Link>
         
-        {/* Updated Rating Section */}
         <div className="product-rating">
           <div className="stars-container">
             {renderStars(avgRating)}

@@ -13,12 +13,6 @@ const Home = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  /**
-   * 1. Core Fetch Logic
-   * The backend aggregation pipeline provides 'averageRating' and 'reviewCount'.
-   * Because this is called on every URL change, navigating back from 
-   * ProductDetails will trigger a fresh fetch with the new ratings.
-   */
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
@@ -38,16 +32,10 @@ const Home = () => {
     }
   }, [location.search, sortOption]);
 
-  /**
-   * The dependency array includes location.search. 
-   * When you navigate back from a ProductDetails page, the URL changes 
-   * (even if just the path), which triggers this effect.
-   */
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
-  // 2. Navigation Helper
   const filterByCategory = (categoryName) => {
     const searchParams = new URLSearchParams(location.search);
     
@@ -139,7 +127,6 @@ const Home = () => {
           ) : (
             <div className="product-grid">
               {products.map((item) => (
-                // Item here contains averageRating and reviewCount from the backend
                 <ProductCard key={item._id} product={item} />
               ))}
             </div>

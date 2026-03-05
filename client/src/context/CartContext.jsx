@@ -48,7 +48,6 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = (product) => {
     setCartItems((prev) => [...prev, { ...product, cartId: Date.now() + Math.random() }]);
-    console.log('Added to cart:', product.name);
   };
 
   const removeFromCart = (indexToRemove) => {

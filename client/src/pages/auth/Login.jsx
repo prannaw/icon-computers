@@ -14,9 +14,6 @@ const Login = () => {
             const userData = { ...(data.user || data), token: data.token };
             localStorage.setItem('user', JSON.stringify(userData));
             localStorage.setItem('token', data.token);
-
-            // Using window.location.href instead of navigate('/') forces a 
-            // full app refresh so App.jsx picks up the 'admin' role immediately.
             window.location.href = "/"; 
             
         } catch (err) {
