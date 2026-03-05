@@ -564,7 +564,28 @@
     order: 3;
     width: 100%;
     max-width: 100%;
-    margin-top: 4px;
+    margin-top: 6px;
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr) 92px;
+    align-items: center;
+    column-gap: 0;
+  }
+
+  .nav-content.nav-content-guest .search-container .category-select {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .nav-content.nav-content-guest .search-container input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .nav-content.nav-content-guest .search-container .search-btn {
+    width: 88px;
+    justify-self: end;
+    margin-right: 4px;
   }
 }
 
@@ -606,5 +627,15 @@
     min-width: 68px;
     min-height: 36px;
     padding: 5px 6px;
+  }
+
+  .nav-content.nav-content-guest .search-container {
+    grid-template-columns: 112px minmax(0, 1fr) 84px;
+  }
+
+  .nav-content.nav-content-guest .search-container .search-btn {
+    width: 80px;
+    margin-right: 3px;
+    font-size: 10px;
   }
 }
