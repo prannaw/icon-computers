@@ -413,6 +413,14 @@
     border-radius: 10px;
   }
 
+  .user-actions > .action-item:not(.cart-action-item),
+  .profile-container .action-item,
+  .cart-action-item {
+    position: relative;
+    flex-direction: column;
+    gap: 2px;
+  }
+
   .profile-container .action-item {
     order: 1;
     border: 1px solid rgba(125, 211, 252, 0.45);
@@ -460,38 +468,49 @@
   }
 
   .profile-container .action-item .action-text,
-  .cart-action-item .action-text {
+  .cart-action-item .action-text,
+  .user-actions > .action-item:not(.cart-action-item) .action-text {
     display: none;
   }
 
   .profile-container .action-item .action-icon-wrapper,
-  .cart-action-item .action-icon-wrapper {
-    width: 24px;
-    height: 24px;
+  .cart-action-item .action-icon-wrapper,
+  .user-actions > .action-item:not(.cart-action-item) .action-icon-wrapper {
+    width: 22px;
+    height: 22px;
     border: none;
     background: transparent;
+    box-shadow: none;
   }
 
   .profile-container .action-item .action-icon,
-  .cart-action-item .action-icon {
+  .cart-action-item .action-icon,
+  .user-actions > .action-item:not(.cart-action-item) .action-icon {
     font-size: 18px;
     line-height: 1;
   }
 
-  .profile-container .action-item .action-icon::after {
+  .profile-container .action-item::after,
+  .user-actions > .action-item:not(.cart-action-item)::after {
     content: 'Profile';
-    margin-left: 6px;
     font-size: 12px;
     font-weight: 700;
     color: #e2e8f0;
+    line-height: 1.1;
   }
 
-  .cart-action-item .cart-icon::after {
+  .cart-action-item::after {
     content: 'Cart';
-    margin-left: 6px;
     font-size: 12px;
     font-weight: 700;
     color: #e2e8f0;
+    line-height: 1.1;
+  }
+
+  .cart-badge {
+    top: -6px;
+    right: -8px;
+    border-width: 1px;
   }
 
   .top-links .separator,
@@ -518,10 +537,10 @@
     font-size: 11px;
   }
 
-  .profile-container .action-item .action-icon::after,
-  .cart-action-item .cart-icon::after {
+  .profile-container .action-item::after,
+  .user-actions > .action-item:not(.cart-action-item)::after,
+  .cart-action-item::after {
     font-size: 11px;
-    margin-left: 4px;
   }
 
   .search-btn {
