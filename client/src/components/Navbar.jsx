@@ -5,6 +5,7 @@ import '../styles/Navbar.css';
 
 const Navbar = () => {
   const { cartItems } = useCart() || { cartItems: [] };
+  const cartCount = cartItems.reduce((acc, item) => acc + Number(item.quantity || 1), 0);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [userData, setUserData] = useState(() => JSON.parse(localStorage.getItem('user')));
@@ -140,8 +141,8 @@ const Navbar = () => {
             <Link to="/cart" className="action-item cart-action-item">
               <div className="action-icon-wrapper">
                 <span className="action-icon cart-icon" aria-hidden="true">🛒</span>
-                {cartItems.length > 0 && (
-                  <span className="cart-badge">{cartItems.length}</span>
+                {cartCount > 0 && (
+                  <span className="cart-badge">{cartCount}</span>
                 )}
               </div>
               <div className="action-text cart-text">

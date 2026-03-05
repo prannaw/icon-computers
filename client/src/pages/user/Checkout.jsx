@@ -39,7 +39,11 @@ const Checkout = () => {
     phone: userData?.phone || ''
   });
 
-  const subtotal = cartItems.reduce((acc, item) => acc + Number(item.price), 0);
+  const totalUnits = cartItems.reduce((acc, item) => acc + Number(item.quantity || 1), 0);
+  const subtotal = cartItems.reduce(
+    (acc, item) => acc + (Number(item.price) * Number(item.quantity || 1)),
+    0
+  );
   const gst = subtotal * 0.18;
   const total = subtotal + gst;
 
@@ -147,7 +151,7 @@ const Checkout = () => {
 
         <div className="cart-summary" style={{ position: 'static', boxShadow: 'none', border: 'none', padding: 0, background: 'transparent' }}>
         <h3>Order & Payment</h3>
-        <div className="summary-row"><span>Items:</span> <span>{cartItems.length}</span></div>
+        <div className="summary-row"><span>Items:</span> <span>{totalUnits}</span></div>
         <div className="summary-row"><span>Subtotal:</span> <span>Rs {subtotal.toLocaleString()}</span></div>
         <div className="summary-row"><span>GST (18%):</span> <span>Rs {gst.toLocaleString()}</span></div>
         <hr />

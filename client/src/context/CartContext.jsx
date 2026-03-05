@@ -13,10 +13,44 @@ const getCurrentUserId = () => {
 
 const getCartStorageKey = () => `cart_${getCurrentUserId()}`;
 
+const getProductKey = (item = {}) =>
+  String(item._id || item.id || item.productId || item.sku || item.name || item.cartId || '');
+
+const normalizeQuantity = (value) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return 1;
+  return Math.max(1, Math.floor(parsed));
+};
+
+const normalizeCartItems = (items = []) => {
+  if (!Array.isArray(items)) return [];
+
+  const merged = new Map();
+  items.forEach((item, index) => {
+    if (!item || typeof item !== 'object') return;
+    const key = getProductKey(item) || `fallback_${index}_${Date.now()}`;
+    const qty = normalizeQuantity(item.quantity);
+    const existing = merged.get(key);
+
+    if (existing) {
+      existing.quantity += qty;
+      return;
+    }
+
+    merged.set(key, {
+      ...item,
+      quantity: qty,
+      cartId: item.cartId || `${Date.now()}_${Math.random()}`
+    });
+  });
+
+  return Array.from(merged.values());
+};
+
 const readCartFromStorage = (storageKey) => {
   try {
     const savedCart = localStorage.getItem(storageKey);
-    return savedCart ? JSON.parse(savedCart) : [];
+    return savedCart ? normalizeCartItems(JSON.parse(savedCart)) : [];
   } catch (error) {
     console.error('Error parsing cart from localStorage', error);
     return [];
@@ -43,15 +77,39 @@ export const CartProvider = ({ children }) => {
   }, [cartStorageKey]);
 
   useEffect(() => {
-    localStorage.setItem(cartStorageKey, JSON.stringify(cartItems));
+    localStorage.setItem(cartStorageKey, JSON.stringify(normalizeCartItems(cartItems)));
   }, [cartItems, cartStorageKey]);
 
   const addToCart = (product) => {
-    setCartItems((prev) => [...prev, { ...product, cartId: Date.now() + Math.random() }]);
+    setCartItems((prev) => {
+      const nextItems = normalizeCartItems(prev);
+      const incomingKey = getProductKey(product);
+      const existingIndex = nextItems.findIndex((item) => getProductKey(item) === incomingKey);
+
+      if (existingIndex >= 0) {
+        return nextItems.map((item, index) => (
+          index === existingIndex
+            ? { ...item, quantity: normalizeQuantity(item.quantity) + 1 }
+            : item
+        ));
+      }
+
+      return [
+        ...nextItems,
+        { ...product, quantity: 1, cartId: Date.now() + Math.random() }
+      ];
+    });
   };
 
   const removeFromCart = (indexToRemove) => {
     setCartItems((prevItems) => prevItems.filter((_, index) => index !== indexToRemove));
+  };
+
+  const updateCartQuantity = (indexToUpdate, nextQuantity) => {
+    const safeQuantity = Math.min(99, normalizeQuantity(nextQuantity));
+    setCartItems((prevItems) => prevItems.map((item, index) => (
+      index === indexToUpdate ? { ...item, quantity: safeQuantity } : item
+    )));
   };
 
   const clearCart = () => {
@@ -60,7 +118,9 @@ export const CartProvider = ({ children }) => {
   };
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider
+      value={{ cartItems: normalizeCartItems(cartItems), addToCart, removeFromCart, updateCartQuantity, clearCart }}
+    >
       {children}
     </CartContext.Provider>
   );

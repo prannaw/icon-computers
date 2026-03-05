@@ -4,17 +4,21 @@ import { useCart } from '../../context/CartContext';
 import '../../styles/Cart.css';
 
 const Cart = () => {
-  const { cartItems, removeFromCart } = useCart();
+  const { cartItems, removeFromCart, updateCartQuantity } = useCart();
   const navigate = useNavigate();
 
-  const subtotal = cartItems.reduce((acc, item) => acc + Number(item.price), 0);
+  const totalUnits = cartItems.reduce((acc, item) => acc + Number(item.quantity || 1), 0);
+  const subtotal = cartItems.reduce(
+    (acc, item) => acc + (Number(item.price) * Number(item.quantity || 1)),
+    0
+  );
   const gst = subtotal * 0.18;
   const total = subtotal + gst;
 
   return (
     <div className="cart-page">
       <div className="cart-items">
-        <h2>Your Shopping Cart ({cartItems.length})</h2>
+        <h2>Your Shopping Cart ({totalUnits})</h2>
         {cartItems.length === 0 ? (
           <div className="empty-msg">
             <div className="empty-cart-icon">Cart</div>
@@ -30,8 +34,31 @@ const Cart = () => {
               <div className="item-details">
                 <h4>{item.name}</h4>
                 <p className="item-category">{item.category}</p>
+                <div className="quantity-control">
+                  <button
+                    className="qty-btn"
+                    type="button"
+                    onClick={() => updateCartQuantity(index, Number(item.quantity || 1) - 1)}
+                    disabled={Number(item.quantity || 1) <= 1}
+                    aria-label="Decrease quantity"
+                  >
+                    -
+                  </button>
+                  <span className="qty-value">{Number(item.quantity || 1)}</span>
+                  <button
+                    className="qty-btn"
+                    type="button"
+                    onClick={() => updateCartQuantity(index, Number(item.quantity || 1) + 1)}
+                    aria-label="Increase quantity"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
-              <p className="item-price">Rs {Number(item.price).toLocaleString()}</p>
+              <p className="item-price">
+                Rs {(Number(item.price) * Number(item.quantity || 1)).toLocaleString()}
+                <span className="unit-price">Rs {Number(item.price).toLocaleString()} each</span>
+              </p>
               <button className="remove-btn" onClick={() => removeFromCart(index)}>&times;</button>
             </div>
           ))
