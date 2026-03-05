@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  // Matches your Frontend and authRoutes logic
   username: { 
     type: String, 
     required: true,
@@ -17,8 +16,6 @@ const userSchema = new mongoose.Schema({
   password: { 
     type: String, 
     required: true 
-    // Note: We validate the 6-15 length in the Route, 
-    // because here the password will be a long hashed string.
   },
   role: { 
     type: String, 
@@ -40,8 +37,6 @@ const userSchema = new mongoose.Schema({
     country: { type: String, default: 'India' },
     pinCode: { type: String, default: '' }
   },
-  
-  // --- OTP & VERIFICATION FIELDS ---
   isVerified: { 
     type: Boolean, 
     default: false 

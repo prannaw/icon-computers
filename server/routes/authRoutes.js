@@ -40,22 +40,18 @@ const getSafeUserPayload = (user) => ({
 const isValidPasswordLength = (password) =>
   typeof password === 'string' && password.length >= 6 && password.length <= 15;
 
-// --- SIGNUP (Creates Pending User & Sends OTP) ---
 router.post('/signup', async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // 1. PASSWORD LENGTH VALIDATION (6-15 Characters)
     if (!isValidPasswordLength(password)) {
       return res.status(400).json({ 
         msg: "Password must be between 6 and 15 characters long." 
       });
     }
-    
-    // 2. Check if user exists
+
     const existingUser = await User.findOne({ email });
-    
-    // Logic for Resending OTP if user exists but isn't verified
+
     if (existingUser && !existingUser.isVerified) {
         const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
         existingUser.otp = newOtp;
@@ -67,15 +63,12 @@ router.post('/signup', async (req, res) => {
 
     if (existingUser) return res.status(400).json({ msg: "User already exists" });
 
-    // 3. Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 4. Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    const otpExpires = Date.now() + 10 * 60 * 1000;
 
-    // 5. Create new user
     const newUser = new User({ 
       username, 
       email, 
@@ -87,7 +80,6 @@ router.post('/signup', async (req, res) => {
 
     await newUser.save();
 
-    // 6. Send the OTP Email
     await sendOTPEmail(email, otp);
 
     res.status(201).json({ 
@@ -134,7 +126,6 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// --- FORGOT PASSWORD (REQUEST OTP) ---
 router.post('/forgot-password/request', async (req, res) => {
   try {
     const email = String(req.body?.email || '').trim().toLowerCase();
@@ -159,7 +150,6 @@ router.post('/forgot-password/request', async (req, res) => {
   }
 });
 
-// --- FORGOT PASSWORD (VERIFY OTP & RESET PASSWORD) ---
 router.post('/forgot-password/verify', async (req, res) => {
   try {
     const email = String(req.body?.email || '').trim().toLowerCase();
@@ -197,7 +187,6 @@ router.post('/forgot-password/verify', async (req, res) => {
   }
 });
 
-// --- VERIFY OTP (Activates Account) ---
 router.post('/verify-otp', async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -205,18 +194,15 @@ router.post('/verify-otp', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ msg: "User not found" });
 
-    // Check if OTP matches and is not expired
     if (user.otp !== otp || user.otpExpires < Date.now()) {
       return res.status(400).json({ msg: "Invalid or expired OTP" });
     }
 
-    // Success: Verify User and Clear OTP fields
     user.isVerified = true;
     user.otp = undefined;
     user.otpExpires = undefined;
     await user.save();
 
-    // Create Token (Using data.user structure to match your App.jsx)
     const token = jwt.sign(
       { id: user._id, role: user.role }, 
       process.env.JWT_SECRET, 
@@ -233,7 +219,6 @@ router.post('/verify-otp', async (req, res) => {
   }
 });
 
-// --- LOGIN (Checks if Verified) ---
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -241,7 +226,6 @@ router.post('/login', async (req, res) => {
     
     if (!user) return res.status(400).json({ msg: "User does not exist" });
 
-    // Block login if not verified
     if (!user.isVerified) {
       return res.status(401).json({ msg: "Please verify your email before logging in." });
     }
@@ -265,7 +249,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// --- PROFILE (Authenticated) ---
 router.get('/profile', authRequired, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select('-password -otp -otpExpires -resetOtp -resetOtpExpires');

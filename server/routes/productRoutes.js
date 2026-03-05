@@ -33,7 +33,6 @@ const generateMerchantOrderId = () => `ICON_${Date.now()}_${Math.floor(Math.rand
 const TRACKING_STAGES = ['Order Placed', 'Packed', 'Shipped', 'Delivered'];
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
-// --- ADMIN STATS ROUTE ---
 router.get('/admin/stats', async (req, res) => {
   try {
     const totalProducts = await Product.countDocuments();
@@ -203,7 +202,6 @@ router.get('/admin/verifications', authRequired, async (req, res) => {
   }
 });
 
-// --- ADMIN ORDER TRACKING ROUTES ---
 router.get('/admin/orders', authRequired, async (req, res) => {
   try {
     if (req.userRole !== 'admin') {
@@ -302,7 +300,6 @@ router.patch('/admin/orders/:orderId/tracking', authRequired, async (req, res) =
   }
 });
 
-// --- CASHFREE PAYMENT ROUTES ---
 router.post('/payment/cashfree/create-order', async (req, res) => {
   try {
     if (!process.env.CASHFREE_APP_ID || !process.env.CASHFREE_SECRET_KEY) {
@@ -509,7 +506,6 @@ router.post('/payment/cashfree/webhook', async (req, res) => {
   }
 });
 
-// --- ORDER ROUTE (COD / Manual) ---
 router.post('/order', async (req, res) => {
   try {
     const { userId, items, totalAmount, paymentMethod, address, customer } = req.body;
@@ -536,7 +532,6 @@ router.post('/order', async (req, res) => {
   }
 });
 
-// --- USER ORDER ROUTES ---
 router.get('/orders/my', authRequired, async (req, res) => {
   try {
     const userId = String(req.userId);
@@ -589,7 +584,6 @@ router.patch('/orders/:orderId/cancel', authRequired, async (req, res) => {
   }
 });
 
-// --- PRODUCT ROUTES ---
 router.get('/', async (req, res) => {
   try {
     const { category, search, sort } = req.query;
@@ -705,7 +699,6 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// --- REVIEW ROUTES ---
 router.post('/:id/reviews', async (req, res) => {
   try {
     const newReview = new Review({

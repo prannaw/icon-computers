@@ -1,4 +1,3 @@
-﻿// 1. Force Google DNS at the very top to bypass Windows DNS lookup bugs
 const dns = require('node:dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
@@ -7,7 +6,6 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
-// --- Import Routes ---
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 
@@ -24,10 +22,8 @@ const parseAllowedOrigins = () => {
 
 const allowedOrigins = parseAllowedOrigins();
 
-// --- Middleware ---
 app.use(cors({
   origin(origin, callback) {
-    // Allow non-browser clients and server-to-server calls.
     if (!origin) return callback(null, true);
     if (allowedOrigins.length === 0) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
@@ -42,11 +38,9 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// --- API Routes ---
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 
-// --- Database Connection ---
 const MONGO_URI = process.env.MONGO_URI;
 
 if (!MONGO_URI) {
