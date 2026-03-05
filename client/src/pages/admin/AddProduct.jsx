@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import API from '../../api'; 
+import '../../styles/Admin.css';
 import '../../styles/AddProduct.css';
 
 const AddProduct = () => {
@@ -59,7 +61,12 @@ const AddProduct = () => {
   return (
     <div className="admin-form-container">
       <div className="admin-card">
-        <h2>Add New Inventory</h2>
+        <div className="admin-header-row">
+          <h2>Add New Inventory</h2>
+          <div className="admin-actions">
+            <Link to="/admin-dashboard" className="admin-btn-secondary">Back to Dashboard</Link>
+          </div>
+        </div>
         <p className="subtitle">Syncing with your Homepage categories.</p>
         
         {/* Added autoComplete="off" here to stop browser recommendations */}

@@ -78,7 +78,7 @@ const Dashboard = () => {
           <p className="admin-subtitle">Real-time performance metrics</p>
         </div>
         <div className="admin-actions">
-          <Link to="/admin-add" className="admin-btn-primary">+ Add Product</Link>
+          <Link to="/admin-add" className="admin-btn-primary">Add Product</Link>
           <Link to="/admin-manage" className="admin-btn-secondary">Manage Inventory</Link>
           <Link to="/admin-orders" className="admin-btn-secondary">Manage Orders</Link>
         </div>

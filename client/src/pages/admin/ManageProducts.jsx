@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import API from '../../api';
 import '../../styles/Admin.css';
 
@@ -38,8 +38,13 @@ const ManageProducts = () => {
   return (
     <div className="admin-main">
       <div className="admin-header-row">
-        <h2>Inventory Management</h2>
-        <span className="count-badge">{products.length} Items</span>
+        <div>
+          <h2>Inventory Management</h2>
+          <p className="admin-subtitle">{products.length} Items</p>
+        </div>
+        <div className="admin-actions">
+          <Link to="/admin-dashboard" className="admin-btn-secondary">Back to Dashboard</Link>
+        </div>
       </div>
 
       <table className="admin-table">

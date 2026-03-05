@@ -105,12 +105,7 @@ const Navbar = () => {
 
           <div className={`user-actions ${!userData ? 'user-actions-guest' : ''}`}>
             {isAdmin && (
-              <>
-                <Link to="/admin-dashboard" className="dashboard-link">Dashboard</Link>
-                <Link to="/admin-add" className="admin-quick-add">
-                  <span>+ Add</span>
-                </Link>
-              </>
+              <Link to="/admin-dashboard" className="dashboard-link">Dashboard</Link>
             )}
 
             {userData ? (
