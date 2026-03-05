@@ -122,6 +122,12 @@
   font-weight: 800;
 }
 
+.stat-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
 /* --- Management Table --- */
 .admin-table {
   width: 100%;

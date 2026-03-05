@@ -37,14 +37,35 @@ router.get('/admin/stats', async (req, res) => {
   try {
     const totalProducts = await Product.countDocuments();
     const totalUsers = await User.countDocuments();
-    const orders = await Order.find({ status: 'Success' });
+    const fulfilledStatuses = ['Success', 'Packed', 'Shipped', 'Delivered'];
+    const orders = await Order.find({ status: { $in: fulfilledStatuses } });
     const totalRevenue = orders.reduce((acc, order) => acc + (order.totalAmount || 0), 0);
 
-    const categoryStats = await Product.aggregate([
-      { $group: { _id: '$category', count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
+    const categoryStats = await Order.aggregate([
+      {
+        $match: {
+          status: { $in: fulfilledStatuses }
+        }
+      },
+      { $unwind: '$items' },
+      {
+        $group: {
+          _id: { $ifNull: ['$items.category', 'Uncategorized'] },
+          soldUnits: { $sum: { $ifNull: ['$items.quantity', 1] } }
+        }
+      },
+      { $sort: { soldUnits: -1 } },
       { $limit: 1 }
     ]);
+
+    if (categoryStats.length === 0) {
+      const fallbackCategoryStats = await Product.aggregate([
+        { $group: { _id: '$category', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 1 }
+      ]);
+      categoryStats.push(...fallbackCategoryStats);
+    }
 
     res.json({
       inventoryCount: totalProducts,

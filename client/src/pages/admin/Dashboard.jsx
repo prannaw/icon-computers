@@ -86,59 +86,59 @@ const Dashboard = () => {
 
       <div className="stats-grid">
         {stats.map((s, index) => (
-          <div key={index} className="stat-card" style={{ borderLeft: `5px solid ${s.color}` }}>
-            <p className="stat-label">{s.label}</p>
-            <h3 className={loading ? 'pulse-loader' : ''}>{s.value}</h3>
-          </div>
+          s.key === 'userCount' ? (
+            <Link
+              key={index}
+              to="/admin-users"
+              className="stat-card stat-card-link"
+              style={{ borderLeft: `5px solid ${s.color}` }}
+            >
+              <p className="stat-label">{s.label}</p>
+              <h3 className={loading ? 'pulse-loader' : ''}>{s.value}</h3>
+            </Link>
+          ) : (
+            <div key={index} className="stat-card" style={{ borderLeft: `5px solid ${s.color}` }}>
+              <p className="stat-label">{s.label}</p>
+              <h3 className={loading ? 'pulse-loader' : ''}>{s.value}</h3>
+            </div>
+          )
         ))}
       </div>
 
-      <div className="dashboard-insights">
-        <div className="chart-section">
-          <h3>Revenue & Growth</h3>
-          {revenueTrend.length > 0 ? (
-            <>
-              <div className="trend-summary-row">
-                <div className="trend-pill">
-                  <span>This month</span>
-                  <strong>{formatRs(growthSummary.currentRevenue)}</strong>
-                </div>
-                <div className="trend-pill">
-                  <span>Last month</span>
-                  <strong>{formatRs(growthSummary.previousRevenue)}</strong>
-                </div>
-                <div className={`trend-pill ${growthPositive ? 'up' : 'down'}`}>
-                  <span>Growth</span>
-                  <strong>{growthPositive ? '+' : ''}{growthSummary.growthPercent}%</strong>
-                </div>
+      <div className="chart-section">
+        <h3>Revenue & Growth</h3>
+        {revenueTrend.length > 0 ? (
+          <>
+            <div className="trend-summary-row">
+              <div className="trend-pill">
+                <span>This month</span>
+                <strong>{formatRs(growthSummary.currentRevenue)}</strong>
               </div>
-              <div className="line-chart-wrap">
-                <svg viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`} className="line-chart-svg" role="img" aria-label="Revenue trend for last six months">
-                  <path d={chartPath} className="line-chart-path" />
-                </svg>
-                <div className="line-chart-labels">
-                  {revenueTrend.map((point) => (
-                    <span key={point.key}>{point.label}</span>
-                  ))}
-                </div>
+              <div className="trend-pill">
+                <span>Last month</span>
+                <strong>{formatRs(growthSummary.previousRevenue)}</strong>
               </div>
-            </>
-          ) : (
-            <div className="chart-placeholder">
-              <span>No paid orders yet. Revenue trend will appear after first successful order.</span>
+              <div className={`trend-pill ${growthPositive ? 'up' : 'down'}`}>
+                <span>Growth</span>
+                <strong>{growthPositive ? '+' : ''}{growthSummary.growthPercent}%</strong>
+              </div>
             </div>
-          )}
-        </div>
-
-        <div className="recent-activity">
-          <h3>Quick Actions</h3>
-          <div className="activity-list">
-            <div className="activity-item">
-              <span className="dot" style={{ backgroundColor: '#00d2ff' }} />
-              <p>View recently registered <Link to="/admin-users" className="quick-link"><strong>Users</strong></Link></p>
+            <div className="line-chart-wrap">
+              <svg viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`} className="line-chart-svg" role="img" aria-label="Revenue trend for last six months">
+                <path d={chartPath} className="line-chart-path" />
+              </svg>
+              <div className="line-chart-labels">
+                {revenueTrend.map((point) => (
+                  <span key={point.key}>{point.label}</span>
+                ))}
+              </div>
             </div>
+          </>
+        ) : (
+          <div className="chart-placeholder">
+            <span>No paid orders yet. Revenue trend will appear after first successful order.</span>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
