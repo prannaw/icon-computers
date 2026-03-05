@@ -70,7 +70,7 @@ const Navbar = () => {
       </div>
 
       <div className="main-nav">
-        <div className="container nav-content">
+        <div className={`container nav-content ${!userData ? 'nav-content-guest' : ''}`}>
           <Link to="/" className="logo-container">
             <span className="text-logo">ICON COMPUTERS</span>
           </Link>
@@ -102,7 +102,7 @@ const Navbar = () => {
             <button type="submit" className="search-btn">Search</button>
           </form>
 
-          <div className="user-actions">
+          <div className={`user-actions ${!userData ? 'user-actions-guest' : ''}`}>
             {isAdmin && (
               <>
                 <Link to="/admin-dashboard" className="dashboard-link">Dashboard</Link>
