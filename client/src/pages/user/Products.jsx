@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import API from '../../api';
 import ProductCard from '../../components/ProductCard.jsx';
-import '../../styles/Home.css';
+import '../../styles/Products.css';
 
 const categories = [
   { name: 'LAPTOPS', img: '/cat-laptop.png', subs: ['Personal Laptops', 'Business Laptops', 'Gaming Laptops'] },
@@ -59,7 +59,7 @@ const Products = () => {
   const currentCategoryDisplay = new URLSearchParams(location.search).get('category') || 'All';
 
   return (
-    <div className="home-container">
+    <div className="products-container">
       <section className="quick-categories">
         {categories.map((cat, index) => {
           const root = cat.name.replace(/S$/i, '').toUpperCase();
