@@ -1,8 +1,25 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import API from '../../api'; 
+import API from '../../api';
 import ProductCard from '../../components/ProductCard.jsx';
 import '../../styles/Home.css';
+
+const categories = [
+  { name: 'LAPTOPS', img: '/cat-laptop.png', subs: ['Personal Laptops', 'Business Laptops', 'Gaming Laptops'] },
+  { name: 'MONITORS', img: '/cat-monitor.png', subs: ['LED Monitors', 'OLED Monitors', 'LCD Monitors'] },
+  { name: 'PRINTERS', img: '/cat-printer.png', subs: ['Inkjet Printers', 'Laser Printers'] },
+  { name: 'WIFI ROUTERS', img: '/cat-wifi.png', subs: ['Wireless Routers', 'Wired Routers'] },
+  { name: 'CPU ACC.', img: '/cat-cpu.png', subs: ['Hard Drives', 'Power Supplies', 'RAMs', 'Processors', 'GPUs', 'Motherboards'] },
+  { name: 'MOUSE', img: '/cat-mouse.png', subs: ['Ergonomical Mouse', 'Gaming Mouse'] },
+  { name: 'KEYBOARDS', img: '/cat-keyboard.png', subs: ['Mechanical Keyboards', 'Membrane Keyboards'] },
+  { name: 'CABLES', img: '/cat-cable.png', subs: ['USB Cables', 'HDMI Cables', 'VGA Cables', 'DisplayPort Cables'] }
+];
+
+const offerCards = [
+  { title: 'Mega Build Week', note: 'Up to 35% OFF', detail: 'Laptops, Monitors and Accessories' },
+  { title: 'Gaming Combo', note: 'Save Rs 2,000', detail: 'Keyboard + Mouse + Mousepad bundle' },
+  { title: 'Free Express Dispatch', note: 'On prepaid orders', detail: 'Fast shipping on selected products' }
+];
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -19,15 +36,13 @@ const Home = () => {
       const params = new URLSearchParams(location.search);
       const category = params.get('category') || '';
       const search = params.get('search') || '';
-      
       const response = await API.get(`/products?category=${category}&search=${search}&sort=${sortOption}`);
-      
       setProducts(response.data);
-      setLoading(false);
       setError(null);
     } catch (err) {
-      console.error("Error fetching products:", err);
-      setError("Could not load products. Please check your connection.");
+      console.error('Error fetching products:', err);
+      setError('Could not load products. Please check your connection.');
+    } finally {
       setLoading(false);
     }
   }, [location.search, sortOption]);
@@ -38,39 +53,52 @@ const Home = () => {
 
   const filterByCategory = (categoryName) => {
     const searchParams = new URLSearchParams(location.search);
-    
     if (categoryName === 'All') {
       searchParams.delete('category');
     } else {
       searchParams.set('category', categoryName);
     }
-    
-    searchParams.delete('search'); 
+    searchParams.delete('search');
     navigate({ pathname: location.pathname, search: searchParams.toString() });
   };
-
-  const handleSortChange = (e) => {
-    setSortOption(e.target.value);
-  };
-
-  const categories = [
-    { name: "LAPTOPS", img: "/cat-laptop.png", subs: ["Personal Laptops", "Business Laptops", "Gaming Laptops"] },
-    { name: "MONITORS", img: "/cat-monitor.png", subs: ["LED Monitors", "OLED Monitors", "LCD Monitors"] },
-    { name: "PRINTERS", img: "/cat-printer.png", subs: ["Inkjet Printers", "Laser Printers"] },
-    { name: "WIFI ROUTERS", img: "/cat-wifi.png", subs: ["Wireless Routers", "Wired Routers"] },
-    { name: "CPU ACC.", img: "/cat-cpu.png", subs: ["Hard Drives", "Power Supplies", "RAMs", "Processors", "GPUs", "Motherboards"] },
-    { name: "MOUSE", img: "/cat-mouse.png", subs: ["Ergonomical Mouse", "Gaming Mouse"] },
-    { name: "KEYBOARDS", img: "/cat-keyboard.png", subs: ["Mechanical Keyboards", "Membrane Keyboards"] },
-    { name: "CABLES", img: "/cat-cable.png", subs: ["USB Cables", "HDMI Cables", "VGA Cables", "DisplayPort Cables"] }
-  ];
 
   const currentCategoryDisplay = new URLSearchParams(location.search).get('category') || 'All';
 
   return (
     <div className="home-container">
+      <section className="hero-shell">
+        <div className="hero-main">
+          <p className="hero-kicker">Icon Computers</p>
+          <h1>Build Your Setup With Trusted Hardware Deals</h1>
+          <p className="hero-copy">
+            Explore laptops, monitors, peripherals and components curated for students, creators and professionals.
+            Better pricing, genuine products, and support you can count on.
+          </p>
+          <div className="hero-actions">
+            <button className="hero-btn primary" onClick={() => filterByCategory('All')}>Shop All Products</button>
+            <button className="hero-btn secondary" onClick={() => filterByCategory('LAPTOPS')}>View Laptop Offers</button>
+          </div>
+        </div>
+        <div className="hero-offers">
+          {offerCards.map((offer) => (
+            <article key={offer.title} className="offer-card">
+              <p className="offer-title">{offer.title}</p>
+              <h3>{offer.note}</h3>
+              <p>{offer.detail}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="trust-strip">
+        <div><strong>100%</strong><span>Genuine Products</span></div>
+        <div><strong>Secure</strong><span>Cashfree Payments</span></div>
+        <div><strong>Quick</strong><span>Order Tracking & Support</span></div>
+      </section>
+
       <section className="quick-categories">
         {categories.map((cat, index) => {
-          const root = cat.name.replace(/S$/i, '').toUpperCase(); 
+          const root = cat.name.replace(/S$/i, '').toUpperCase();
           const activeCatUpper = currentCategoryDisplay.toUpperCase();
           const isActive = activeCatUpper.includes(root) && activeCatUpper !== 'ALL';
 
@@ -86,10 +114,15 @@ const Home = () => {
               </div>
               <ul className="category-dropdown">
                 {cat.subs.map((sub, i) => (
-                  <li key={i} onClick={(e) => {
-                    e.stopPropagation();
-                    filterByCategory(sub);
-                  }}>{sub}</li>
+                  <li
+                    key={i}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      filterByCategory(sub);
+                    }}
+                  >
+                    {sub}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -103,10 +136,10 @@ const Home = () => {
             <h2 className="section-title">
               {currentCategoryDisplay.toUpperCase() === 'ALL' ? 'Our Products' : `Category: ${currentCategoryDisplay}`}
             </h2>
-            
+
             <div className="filter-bar">
-              <label htmlFor="sort">Sort By: </label>
-              <select id="sort" value={sortOption} onChange={handleSortChange} className="sort-dropdown">
+              <label htmlFor="sort">Sort By:</label>
+              <select id="sort" value={sortOption} onChange={(e) => setSortOption(e.target.value)} className="sort-dropdown">
                 <option value="newest">Newest Arrivals</option>
                 <option value="priceLow">Price: Low to High</option>
                 <option value="priceHigh">Price: High to Low</option>
@@ -114,7 +147,7 @@ const Home = () => {
               </select>
             </div>
           </div>
-          
+
           {loading ? (
             <div className="status-message">Refreshing Catalog...</div>
           ) : error ? (
