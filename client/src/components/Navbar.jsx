@@ -44,9 +44,9 @@ const Navbar = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (!searchTerm && selectedCategory === 'all') {
-      navigate('/');
+      navigate('/products');
     } else {
-      navigate(`/?search=${encodeURIComponent(searchTerm)}&category=${selectedCategory}`);
+      navigate(`/products?search=${encodeURIComponent(searchTerm)}&category=${selectedCategory}`);
     }
   };
 

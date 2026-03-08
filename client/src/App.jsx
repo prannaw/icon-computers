@@ -9,6 +9,7 @@ import ForgotPassword from './pages/auth/ForgotPassword.jsx';
 import Cart from './pages/user/Cart.jsx';
 import Checkout from './pages/user/Checkout.jsx';
 import ProductDetails from './pages/user/ProductDetails.jsx';
+import Products from './pages/user/Products.jsx';
 import MyOrders from './pages/user/MyOrders.jsx';
 import Profile from './pages/user/Profile.jsx';
 import AddProduct from './pages/admin/AddProduct.jsx';
@@ -30,6 +31,7 @@ function App() {
       <div className="app-body">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

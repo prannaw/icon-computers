@@ -164,7 +164,7 @@ const MyOrders = () => {
       <div className="orders-shell">
         <div className="orders-header">
           <h2>My Orders</h2>
-          <button className="continue-btn" onClick={() => navigate('/')}>Continue Shopping</button>
+          <button className="continue-btn" onClick={() => navigate('/products')}>Continue Shopping</button>
         </div>
 
         {message && <p className="orders-message">{message}</p>}

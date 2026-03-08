@@ -23,7 +23,7 @@ const Cart = () => {
           <div className="empty-msg">
             <div className="empty-cart-icon">Cart</div>
             <p>Your cart is empty. Start shopping!</p>
-            <button className="shop-btn" onClick={() => navigate('/')}>Browse Products</button>
+            <button className="shop-btn" onClick={() => navigate('/products')}>Browse Products</button>
           </div>
         ) : (
           cartItems.map((item, index) => (
