@@ -74,6 +74,28 @@
   color: #e2e8f0;
 }
 
+.hero-image-placeholder {
+  margin-top: 18px;
+  min-height: 170px;
+  border-radius: 14px;
+  border: 1px dashed rgba(125, 211, 252, 0.55);
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.62), rgba(2, 6, 23, 0.72)),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(148, 163, 184, 0.08) 0 14px,
+      rgba(56, 189, 248, 0.12) 14px 28px
+    );
+  color: #bae6fd;
+  font-size: 0.92rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .hero-offers {
   display: grid;
   grid-template-rows: repeat(3, minmax(0, 1fr));
@@ -282,6 +304,11 @@
 
   .hero-btn {
     width: 100%;
+  }
+
+  .hero-image-placeholder {
+    min-height: 140px;
+    font-size: 0.82rem;
   }
 
   .highlight-strip {

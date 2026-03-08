@@ -53,8 +53,8 @@ const Home = () => {
           </p>
           <div className="hero-actions">
             <button className="hero-btn primary" onClick={() => goToProducts('All')}>Browse Products</button>
-            <button className="hero-btn secondary" onClick={() => goToProducts('LAPTOPS')}>Laptop Offers</button>
           </div>
+          <div className="hero-image-placeholder">Background Image Placeholder</div>
         </div>
 
         <div className="hero-offers">
