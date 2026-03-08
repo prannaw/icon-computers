@@ -12,14 +12,35 @@
 }
 
 .hero-main {
+  position: relative;
+  overflow: hidden;
   padding: 30px;
   border-radius: 18px;
   border: 1px solid #c6daf4;
   color: #f8fbff;
-  background:
-    radial-gradient(circle at 82% 16%, rgba(56, 189, 248, 0.26), transparent 40%),
-    linear-gradient(145deg, #0d1f3e 0%, #0b1530 56%, #102348 100%);
   box-shadow: 0 16px 34px rgba(15, 23, 42, 0.28);
+}
+
+.hero-bg-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.08);
+  filter: blur(5px);
+}
+
+.hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 82% 16%, rgba(56, 189, 248, 0.2), transparent 40%),
+    linear-gradient(145deg, rgba(13, 31, 62, 0.88) 0%, rgba(11, 21, 48, 0.9) 56%, rgba(16, 35, 72, 0.88) 100%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
 }
 
 .hero-kicker,
@@ -72,28 +93,6 @@
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(147, 197, 253, 0.45);
   color: #e2e8f0;
-}
-
-.hero-image-placeholder {
-  margin-top: 18px;
-  min-height: 170px;
-  border-radius: 14px;
-  border: 1px dashed rgba(125, 211, 252, 0.55);
-  background:
-    linear-gradient(135deg, rgba(15, 23, 42, 0.62), rgba(2, 6, 23, 0.72)),
-    repeating-linear-gradient(
-      -45deg,
-      rgba(148, 163, 184, 0.08) 0 14px,
-      rgba(56, 189, 248, 0.12) 14px 28px
-    );
-  color: #bae6fd;
-  font-size: 0.92rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .hero-offers {
@@ -304,11 +303,6 @@
 
   .hero-btn {
     width: 100%;
-  }
-
-  .hero-image-placeholder {
-    min-height: 140px;
-    font-size: 0.82rem;
   }
 
   .highlight-strip {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/Home.css';
+import heroBg from '../../assets/home/hero-bg.jpg';
 
 const offerCards = [
   { title: 'Mega Build Week', note: 'Up to 35% OFF', detail: 'Laptops, monitors, and office setups' },
@@ -45,16 +46,19 @@ const Home = () => {
     <div className="home-container">
       <section className="hero-shell">
         <div className="hero-main">
-          <p className="hero-kicker">Icon Computers</p>
-          <h1>Technology That Fits Your Everyday Build</h1>
-          <p className="hero-copy">
-            A practical computer accessories store for students, professionals, gamers, and creators.
-            Discover reliable products, active offers, and a smooth buying experience.
-          </p>
-          <div className="hero-actions">
-            <button className="hero-btn primary" onClick={() => goToProducts('All')}>Browse Products</button>
+          <div className="hero-bg-image" style={{ backgroundImage: `url(${heroBg})` }} />
+          <div className="hero-bg-overlay" />
+          <div className="hero-content">
+            <p className="hero-kicker">Icon Computers</p>
+            <h1>Technology That Fits Your Everyday Build</h1>
+            <p className="hero-copy">
+              A practical computer accessories store for students, professionals, gamers, and creators.
+              Discover reliable products, active offers, and a smooth buying experience.
+            </p>
+            <div className="hero-actions">
+              <button className="hero-btn primary" onClick={() => goToProducts('All')}>Browse Products</button>
+            </div>
           </div>
-          <div className="hero-image-placeholder">Background Image Placeholder</div>
         </div>
 
         <div className="hero-offers">
